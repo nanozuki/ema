@@ -76,9 +76,7 @@
       "indexes": {
         "ranking_in_vote_work_id_idx": {
           "name": "ranking_in_vote_work_id_idx",
-          "columns": [
-            "work_id"
-          ],
+          "columns": ["work_id"],
           "isUnique": false
         }
       },
@@ -87,12 +85,8 @@
           "name": "ranking_in_vote_vote_id_vote_id_fk",
           "tableFrom": "ranking_in_vote",
           "tableTo": "vote",
-          "columnsFrom": [
-            "vote_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["vote_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -100,22 +94,15 @@
           "name": "ranking_in_vote_work_id_work_id_fk",
           "tableFrom": "ranking_in_vote",
           "tableTo": "work",
-          "columnsFrom": [
-            "work_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["work_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
         "ranking_in_vote_vote_id_work_id_pk": {
-          "columns": [
-            "vote_id",
-            "work_id"
-          ],
+          "columns": ["vote_id", "work_id"],
           "name": "ranking_in_vote_vote_id_work_id_pk"
         }
       },
@@ -156,18 +143,12 @@
       "indexes": {
         "vote_voter_id_idx": {
           "name": "vote_voter_id_idx",
-          "columns": [
-            "voter_id"
-          ],
+          "columns": ["voter_id"],
           "isUnique": false
         },
         "vote_year_department_voter_idx": {
           "name": "vote_year_department_voter_idx",
-          "columns": [
-            "year",
-            "department",
-            "voter_id"
-          ],
+          "columns": ["year", "department", "voter_id"],
           "isUnique": true
         }
       },
@@ -176,12 +157,8 @@
           "name": "vote_year_ceremony_year_fk",
           "tableFrom": "vote",
           "tableTo": "ceremony",
-          "columnsFrom": [
-            "year"
-          ],
-          "columnsTo": [
-            "year"
-          ],
+          "columnsFrom": ["year"],
+          "columnsTo": ["year"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -189,12 +166,8 @@
           "name": "vote_voter_id_voter_id_fk",
           "tableFrom": "vote",
           "tableTo": "voter",
-          "columnsFrom": [
-            "voter_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["voter_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -230,9 +203,7 @@
       "indexes": {
         "voter_name_unique": {
           "name": "voter_name_unique",
-          "columns": [
-            "name"
-          ],
+          "columns": ["name"],
           "isUnique": true
         }
       },
@@ -296,29 +267,17 @@
       "indexes": {
         "work_name_idx": {
           "name": "work_name_idx",
-          "columns": [
-            "year",
-            "department",
-            "name"
-          ],
+          "columns": ["year", "department", "name"],
           "isUnique": false
         },
         "work_origin_name_idx": {
           "name": "work_origin_name_idx",
-          "columns": [
-            "year",
-            "department",
-            "origin_name"
-          ],
+          "columns": ["year", "department", "origin_name"],
           "isUnique": false
         },
         "work_aliases_idx": {
           "name": "work_aliases_idx",
-          "columns": [
-            "year",
-            "department",
-            "aliases"
-          ],
+          "columns": ["year", "department", "aliases"],
           "isUnique": false
         }
       },
@@ -327,12 +286,8 @@
           "name": "work_year_ceremony_year_fk",
           "tableFrom": "work",
           "tableTo": "ceremony",
-          "columnsFrom": [
-            "year"
-          ],
-          "columnsTo": [
-            "year"
-          ],
+          "columnsFrom": ["year"],
+          "columnsTo": ["year"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
