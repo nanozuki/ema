@@ -1,9 +1,8 @@
 import { ensureStage } from '$lib/domain/entity';
 import { Stage } from '$lib/domain/value.js';
-import { getService } from '$lib/server/index.js';
 
-export async function load({ parent }) {
-  const service = getService();
+export async function load({ parent, locals }) {
+  const { service } = locals;
   const pd = await parent();
   ensureStage(pd.ceremony, Stage.Award, pd.now);
   return {

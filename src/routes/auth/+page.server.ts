@@ -1,4 +1,4 @@
-import { getService } from '$lib/server';
+import { getLocalService } from '$lib/server';
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions } from './$types';
 import { Err } from '$lib/domain/errors';
@@ -14,7 +14,7 @@ function parseForm(data: FormData): AuthForm {
 }
 
 export const actions = {
-  default: async ({ request, url }) => {
+  default: async ({ request, url, locals }) => {
     const data = await request.formData();
     const form = parseForm(data);
     if ('errors' in form) {
@@ -24,7 +24,7 @@ export const actions = {
     if (url.searchParams.has('redirect')) {
       query += '&redirect=' + encodeURIComponent(url.searchParams.get('redirect')!);
     }
-    return (await Err.match(() => getService().getUserByName(form.username)))
+    return (await Err.match(() => locals.service.getUserByName(form.username)))
       .with({ ok: true, value: undefined }, () => {
         redirect(302, '/auth/sign_up' + query);
       })

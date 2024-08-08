@@ -1,7 +1,5 @@
-import { getService } from '$lib/server';
-
-export async function load() {
-  const service = getService();
+export async function load({ locals }) {
+  const { service } = locals;
   return {
     bestWorks: await service.getBestWorks(),
   };

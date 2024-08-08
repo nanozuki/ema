@@ -1,3 +1,4 @@
+import type { Service } from '$lib/server/service';
 import 'unplugin-icons/types/svelte';
 
 // See https://kit.svelte.dev/docs/types#app
@@ -9,9 +10,15 @@ declare global {
       message: string;
       stack?: string;
     }
-    // interface Locals {}
+    interface Locals {
+      service: Service;
+    }
     // interface PageData {}
-    // interface Platform {}
+    interface Platform {
+      env: {
+        EMA_DB: D1Database;
+      };
+    }
   }
 }
 

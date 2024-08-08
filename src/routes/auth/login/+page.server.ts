@@ -1,4 +1,3 @@
-import { getService } from '$lib/server';
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions } from './$types';
 import { Err } from '$lib/domain/errors';
@@ -30,13 +29,13 @@ function parseForm(data: FormData): LoginForm {
 }
 
 export const actions = {
-  default: async ({ request, cookies, url }) => {
+  default: async ({ request, cookies, url, locals }) => {
     const data = await request.formData();
     const form = parseForm(data);
     if ('errors' in form) {
       return fail(400, form);
     }
-    return (await Err.match(() => getService().logInVoter(form.username, form.password, cookies)))
+    return (await Err.match(() => locals.service.logInVoter(form.username, form.password, cookies)))
       .with({ ok: true, value: undefined }, () => {
         const response: LoginForm = { ...form, errors: { password: '密码错误' } };
         return fail(400, response);

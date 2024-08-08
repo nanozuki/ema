@@ -1,13 +1,12 @@
 import type { Actions } from './$types';
 import { fail } from '@sveltejs/kit';
-import { getService } from '$lib/server';
 import { parseDepartment } from '$lib/domain/entity';
 import { Err } from '$lib/domain/errors';
 import { P, match } from 'ts-pattern';
 
-export async function load({ params, parent }) {
+export async function load({ params, parent, locals }) {
   const pd = await parent();
-  const service = getService();
+  const { service } = locals;
   const department = parseDepartment(pd.ceremony, params.dept);
   return {
     department,
@@ -25,14 +24,14 @@ function parseForm(data: FormData): NominationForm {
 }
 
 export const actions = {
-  default: async ({ request, params }) => {
+  default: async ({ request, params, locals }) => {
     const { year, dept: department } = params;
     const data = await request.formData();
     const form = parseForm(data);
     if ('errors' in form) {
       return fail(400, form);
     }
-    const service = getService();
+    const { service } = locals;
     return (await Err.match(() => service.addNomination(year, department, form.workName)))
       .with({ ok: true, value: P._ }, () => {})
       .with({ ok: false, error: P.select() }, (error) => {

@@ -1,12 +1,11 @@
 import type { Actions } from './$types';
 import { fail } from '@sveltejs/kit';
-import { getService } from '$lib/server';
 import { parseDepartment } from '$lib/domain/entity';
 
-export async function load({ params, parent }) {
+export async function load({ params, parent, locals }) {
   const pd = await parent();
   const department = parseDepartment(pd.ceremony, params.dept);
-  const service = getService();
+  const { service } = locals;
   const works = await service.getVote(pd.ceremony.year, department, pd.voter);
   works.sort((a, b) => (a.ranking || Infinity) - (b.ranking || Infinity));
   const votedWorkIds = new Set(works.map((w) => w.id));
@@ -58,7 +57,7 @@ function parseForm(data: FormData): VoteForm {
 }
 
 export const actions = {
-  default: async ({ cookies, request, params }) => {
+  default: async ({ cookies, request, params, locals }) => {
     const data = await request.formData();
     const form = parseForm(data);
     if ('errors' in form) {
@@ -66,7 +65,7 @@ export const actions = {
     }
 
     const { year, dept } = params;
-    const service = getService();
+    const { service } = locals;
     await service.setVote(cookies, year, dept, form.rankings);
     return;
   },

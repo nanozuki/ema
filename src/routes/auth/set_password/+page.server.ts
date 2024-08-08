@@ -1,4 +1,3 @@
-import { getService } from '$lib/server';
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions } from './$types';
 import { Err } from '$lib/domain/errors';
@@ -29,13 +28,13 @@ function parseForm(data: FormData): SetPasswordForm {
 }
 
 export const actions = {
-  default: async ({ request, cookies, url }) => {
+  default: async ({ request, cookies, url, locals }) => {
     const data = await request.formData();
     const form = parseForm(data);
     if ('errors' in form) {
       return fail(400, form);
     }
-    return (await Err.match(() => getService().setPassword(form.username, form.password, cookies)))
+    return (await Err.match(() => locals.service.setPassword(form.username, form.password, cookies)))
       .with({ ok: true, value: P._ }, () => {
         if (url.searchParams.has('redirect')) {
           redirect(302, decodeURIComponent(url.searchParams.get('redirect')!));

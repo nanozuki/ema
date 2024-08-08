@@ -1,29 +1,18 @@
-import { Service } from '$lib/server/service';
+import { calculator } from '$lib/server/calculate';
 import {
   CeremonyRepositoryImpl,
-  WorkRepositoryImpl,
-  VoterRepositoryImpl,
   VoteRepositoryImpl,
+  VoterRepositoryImpl,
+  WorkRepositoryImpl,
 } from '$lib/server/data/repository';
-import { env } from '$env/dynamic/private';
-import postgres from 'postgres';
-import { drizzle } from 'drizzle-orm/postgres-js';
-import { calculator } from '$lib/server/calculate';
+import { Service } from '$lib/server/service';
+import { drizzle } from 'drizzle-orm/d1';
 
-function initService(): Service {
-  const dbClient = drizzle(postgres(env.EMA_POSTGRES_URL!), { logger: true });
+export function getLocalService(platform: App.Platform): Service {
+  const dbClient = drizzle(platform.env.EMA_DB, { logger: true });
   const ceremony = new CeremonyRepositoryImpl(dbClient);
   const work = new WorkRepositoryImpl(dbClient);
   const voter = new VoterRepositoryImpl(dbClient);
   const vote = new VoteRepositoryImpl(dbClient);
   return new Service(ceremony, work, voter, vote, calculator);
-}
-
-let service: Service | undefined;
-
-export function getService(): Service {
-  if (!service) {
-    service = initService();
-  }
-  return service;
 }

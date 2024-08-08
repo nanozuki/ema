@@ -1,7 +1,5 @@
-import { getService } from '$lib/server';
-
-export async function load({ cookies }) {
-  const service = getService();
+export async function load({ cookies, locals }) {
+  const { service } = locals;
   const [ceremonies, voter, invited] = await Promise.all([
     service.getCeremonies(),
     service.getVoterToken(cookies),
