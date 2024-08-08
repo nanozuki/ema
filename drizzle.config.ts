@@ -1,10 +1,7 @@
-import type { Config } from 'drizzle-kit';
+import { defineConfig } from 'drizzle-kit';
 
-export default {
-  schema: 'src/lib/server/data/schema.ts',
+export default defineConfig({
+  schema: './src/lib/server/data/schema.ts',
   out: './migrations',
-  driver: 'pg',
-  dbCredentials: {
-    connectionString: process.env.EMA_POSTGRES_URL!,
-  },
-} satisfies Config;
+  dialect: 'sqlite',
+});

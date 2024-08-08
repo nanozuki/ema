@@ -1,21 +1,21 @@
 import type { Ceremony, Vote, Voter, Work } from '$lib/domain/entity';
+import { Err } from '$lib/domain/errors';
+import type { Department } from '$lib/domain/value';
 import type {
   CeremonyRepository,
-  WorkRepository,
-  VoterRepository,
-  VoteRepository,
-  VoteItem,
   RankResultItem,
+  VoteItem,
+  VoteRepository,
+  VoterRepository,
+  WorkRepository,
 } from '$lib/server/adapter';
-import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { ceremony, rankingInVote, vote, voter, work } from './schema';
-import { desc, eq, and, gte, or, sql } from 'drizzle-orm';
-import type { Department } from '$lib/domain/value';
 import bcrypt from 'bcrypt';
-import { Err } from '$lib/domain/errors';
+import { and, desc, eq, gte, or, sql } from 'drizzle-orm';
+import { DrizzleD1Database } from 'drizzle-orm/d1';
+import { ceremony, rankingInVote, vote, voter, work } from './schema';
 
 export class CeremonyRepositoryImpl implements CeremonyRepository {
-  constructor(private db: PostgresJsDatabase) {}
+  constructor(private db: DrizzleD1Database) {}
 
   async getCeremonies(): Promise<Ceremony[]> {
     return Err.catch(
@@ -49,7 +49,7 @@ function modelToWork({ id, year, department, name, originName, aliases, ranking 
 }
 
 export class WorkRepositoryImpl implements WorkRepository {
-  constructor(private db: PostgresJsDatabase) {}
+  constructor(private db: DrizzleD1Database) {}
 
   async getAllWinners(): Promise<Map<number, Work[]>> {
     const results = await Err.catch(
@@ -117,7 +117,7 @@ export class WorkRepositoryImpl implements WorkRepository {
             await db.insert(work).values({ year, department, name: workName });
           }
         },
-        { isolationLevel: 'serializable' },
+        { behavior: 'immediate' },
       );
     };
     await Err.catch(operation, (err) => Err.Database(`work.addNomination(${year}, ${department}, ${workName})`, err));
@@ -142,7 +142,7 @@ export class WorkRepositoryImpl implements WorkRepository {
             await db.update(work).set({ ranking }).where(eq(work.id, workId));
           }
         },
-        { isolationLevel: 'serializable' },
+        { behavior: 'immediate' },
       );
     };
     await Err.catch(op, (err) => Err.Database(`work.setWorkRanking(${ranks})`, err));
@@ -150,7 +150,7 @@ export class WorkRepositoryImpl implements WorkRepository {
 }
 
 export class VoterRepositoryImpl implements VoterRepository {
-  constructor(private db: PostgresJsDatabase) {}
+  constructor(private db: DrizzleD1Database) {}
 
   async findVoter(name: string): Promise<Voter | undefined> {
     const results = await Err.catch(
@@ -217,7 +217,7 @@ export class VoterRepositoryImpl implements VoterRepository {
 }
 
 export class VoteRepositoryImpl implements VoteRepository {
-  constructor(private db: PostgresJsDatabase) {}
+  constructor(private db: DrizzleD1Database) {}
 
   async getVote(year: number, department: Department, voterId: number): Promise<Vote | undefined> {
     return await Err.catch(
@@ -262,7 +262,7 @@ export class VoteRepositoryImpl implements VoteRepository {
             await db.delete(rankingInVote).where(eq(rankingInVote.voteId, id));
             await db.insert(rankingInVote).values(rankingsRows);
           },
-          { isolationLevel: 'serializable' },
+          { behavior: 'immediate' },
         );
       },
       (err) => Err.Database(`vote.setVote(${year}, ${department}, ${voterId}, ${works})`, err),

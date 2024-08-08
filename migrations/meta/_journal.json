@@ -1,19 +1,12 @@
 {
-  "version": "5",
-  "dialect": "pg",
+  "version": "7",
+  "dialect": "sqlite",
   "entries": [
     {
       "idx": 0,
-      "version": "5",
-      "when": 1705830164460,
-      "tag": "0000_graceful_ultimo",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1706162812996,
-      "tag": "0001_steep_magneto",
+      "version": "6",
+      "when": 1723106838407,
+      "tag": "0000_complete_thundra",
       "breakpoints": true
     }
   ]

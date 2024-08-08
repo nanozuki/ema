@@ -1,42 +1,46 @@
 {
-  "id": "e1b8dcd4-47e2-47b0-9804-7e3b0fe6bc11",
+  "version": "6",
+  "dialect": "sqlite",
+  "id": "a99754b1-586b-46d0-8509-6515bcd0d77d",
   "prevId": "00000000-0000-0000-0000-000000000000",
-  "version": "5",
-  "dialect": "pg",
   "tables": {
     "ceremony": {
       "name": "ceremony",
-      "schema": "",
       "columns": {
         "year": {
           "name": "year",
           "type": "integer",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "departments": {
           "name": "departments",
-          "type": "department[]",
+          "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "nomination_start_at": {
           "name": "nomination_start_at",
-          "type": "timestamp",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "voting_start_at": {
           "name": "voting_start_at",
-          "type": "timestamp",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "award_start_at": {
           "name": "award_start_at",
-          "type": "timestamp",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -46,25 +50,27 @@
     },
     "ranking_in_vote": {
       "name": "ranking_in_vote",
-      "schema": "",
       "columns": {
         "vote_id": {
           "name": "vote_id",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "work_id": {
           "name": "work_id",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "ranking": {
           "name": "ranking",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {
@@ -106,42 +112,45 @@
       },
       "compositePrimaryKeys": {
         "ranking_in_vote_vote_id_work_id_pk": {
-          "name": "ranking_in_vote_vote_id_work_id_pk",
           "columns": [
             "vote_id",
             "work_id"
-          ]
+          ],
+          "name": "ranking_in_vote_vote_id_work_id_pk"
         }
       },
       "uniqueConstraints": {}
     },
     "vote": {
       "name": "vote",
-      "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "integer",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "year": {
           "name": "year",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "voter_id": {
           "name": "voter_id",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "department": {
           "name": "department",
-          "type": "department",
+          "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {
@@ -151,6 +160,15 @@
             "voter_id"
           ],
           "isUnique": false
+        },
+        "vote_year_department_voter_idx": {
+          "name": "vote_year_department_voter_idx",
+          "columns": [
+            "year",
+            "department",
+            "voter_id"
+          ],
+          "isUnique": true
         }
       },
       "foreignKeys": {
@@ -182,99 +200,97 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "vote_year_department_voter_idx": {
-          "name": "vote_year_department_voter_idx",
-          "nullsNotDistinct": false,
-          "columns": [
-            "year",
-            "department",
-            "voter_id"
-          ]
-        }
-      }
+      "uniqueConstraints": {}
     },
     "voter": {
       "name": "voter",
-      "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "integer",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "name": {
           "name": "name",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "password_hash": {
           "name": "password_hash",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "autoincrement": false
         }
       },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
+      "indexes": {
         "voter_name_unique": {
           "name": "voter_name_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "name"
-          ]
+          ],
+          "isUnique": true
         }
-      }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
     },
     "work": {
       "name": "work",
-      "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "integer",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "year": {
           "name": "year",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "department": {
           "name": "department",
-          "type": "department",
+          "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "name": {
           "name": "name",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "origin_name": {
           "name": "origin_name",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "autoincrement": false
         },
         "aliases": {
           "name": "aliases",
-          "type": "text[]",
+          "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "autoincrement": false
         },
         "ranking": {
           "name": "ranking",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {
@@ -325,24 +341,13 @@
       "uniqueConstraints": {}
     }
   },
-  "enums": {
-    "department": {
-      "name": "department",
-      "values": {
-        "anime": "anime",
-        "manga-novel": "manga-novel",
-        "game": "game",
-        "tv-anime": "tv-anime",
-        "non-tv-anime": "non-tv-anime",
-        "manga": "manga",
-        "novel": "novel"
-      }
-    }
-  },
-  "schemas": {},
+  "enums": {},
   "_meta": {
     "schemas": {},
     "tables": {},
     "columns": {}
+  },
+  "internal": {
+    "indexes": {}
   }
 }

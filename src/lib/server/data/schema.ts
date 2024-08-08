@@ -1,36 +1,25 @@
+import { index, integer, primaryKey, sqliteTable, text, unique } from 'drizzle-orm/sqlite-core';
 import { Department } from '../../domain/value';
-import { index, unique, integer, pgEnum, pgTable, primaryKey, serial, text, timestamp } from 'drizzle-orm/pg-core';
 
-export const department = pgEnum('department', [
-  Department.Anime,
-  Department.MangaAndNovel,
-  Department.Game,
-  Department.TVAnime,
-  Department.NonTVAnime,
-  Department.Manga,
-  Department.Novel,
-  Department.Music,
-]);
-
-export const ceremony = pgTable('ceremony', {
-  year: integer('year').primaryKey(),
-  departments: department('departments').array().notNull(),
-  nominationStartAt: timestamp('nomination_start_at').notNull(),
-  votingStartAt: timestamp('voting_start_at').notNull(),
-  awardStartAt: timestamp('award_start_at').notNull(),
+export const ceremony = sqliteTable('ceremony', {
+  year: integer('year').notNull().primaryKey(),
+  departments: text('departments', { mode: 'json' }).$type<Department[]>().notNull(),
+  nominationStartAt: integer('nomination_start_at', { mode: 'timestamp_ms' }).notNull(),
+  votingStartAt: integer('voting_start_at', { mode: 'timestamp_ms' }).notNull(),
+  awardStartAt: integer('award_start_at', { mode: 'timestamp_ms' }).notNull(),
 });
 
-export const work = pgTable(
+export const work = sqliteTable(
   'work',
   {
-    id: serial('id').primaryKey(),
+    id: integer('id').primaryKey(),
     year: integer('year')
       .notNull()
       .references(() => ceremony.year),
-    department: department('department').notNull(),
+    department: text('department').$type<Department>().notNull(),
     name: text('name').notNull(),
     originName: text('origin_name'),
-    aliases: text('aliases').array(),
+    aliases: text('aliases', { mode: 'json' }).$type<string[]>(),
     ranking: integer('ranking'),
   },
   (table) => {
@@ -42,23 +31,23 @@ export const work = pgTable(
   },
 );
 
-export const voter = pgTable('voter', {
-  id: serial('id').primaryKey(),
+export const voter = sqliteTable('voter', {
+  id: integer('id').primaryKey(),
   name: text('name').notNull().unique(),
   passwordHash: text('password_hash'),
 });
 
-export const vote = pgTable(
+export const vote = sqliteTable(
   'vote',
   {
-    id: serial('id').primaryKey(),
+    id: integer('id').primaryKey(),
     year: integer('year')
       .notNull()
       .references(() => ceremony.year),
     voterId: integer('voter_id')
       .notNull()
       .references(() => voter.id),
-    department: department('department').notNull(),
+    department: text('department').$type<Department>().notNull(),
   },
   (table) => {
     return {
@@ -68,7 +57,7 @@ export const vote = pgTable(
   },
 );
 
-export const rankingInVote = pgTable(
+export const rankingInVote = sqliteTable(
   'ranking_in_vote',
   {
     voteId: integer('vote_id')
