@@ -1,6 +1,7 @@
 # frameworks
-/node_modules
-/.svelte-kit
+.wrangler/
+.svelte-kit/
+node_modules/
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
