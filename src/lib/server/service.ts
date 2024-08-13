@@ -68,7 +68,7 @@ export class Service {
   }
 
   async setVoterToken(cookies: Cookies, from: Date, voter: Voter): Promise<void> {
-    tokens.voter.setToCookie(from, cookies, { voter });
+    return await this.tokens.voter.setToCookie(from, cookies, { voter });
   }
 
   async setInvitedToken(cookies: Cookies, from: Date): Promise<void> {
