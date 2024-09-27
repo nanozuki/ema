@@ -101,24 +101,23 @@ export class WorkRepositoryImpl implements WorkRepository {
 
   async addNomination(year: number, department: Department, workName: string): Promise<void> {
     const operation = async () => {
-      await this.db.transaction(
-        async (db) => {
-          const works = await db
-            .select()
-            .from(work)
-            .where(
-              and(
-                eq(work.year, year),
-                eq(work.department, department),
-                or(eq(work.name, workName), eq(work.originName, workName), sql`${workName} = ANY(work.aliases)`),
-              ),
-            );
-          if (works.length === 0) {
-            await db.insert(work).values({ year, department, name: workName });
-          }
-        },
-        { behavior: 'immediate' },
-      );
+      const works = await this.db
+        .select()
+        .from(work)
+        .where(
+          and(
+            eq(work.year, year),
+            eq(work.department, department),
+            or(
+              eq(work.name, workName),
+              eq(work.originName, workName),
+              sql`EXISTS (SELECT 1 FROM json_each(work.aliases) WHERE json_each.value = ${workName})`,
+            ),
+          ),
+        );
+      if (works.length === 0) {
+        await this.db.insert(work).values({ year, department, name: workName });
+      }
     };
     await Err.catch(operation, (err) => Err.Database(`work.addNomination(${year}, ${department}, ${workName})`, err));
   }

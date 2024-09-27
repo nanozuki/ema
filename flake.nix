@@ -23,6 +23,8 @@
             # svelte
             nodePackages.svelte-language-server
             nodePackages.svelte-check
+            # sqlite
+            litecli
           ];
         };
       };
