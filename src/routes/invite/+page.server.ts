@@ -4,6 +4,7 @@ import { redirect } from '@sveltejs/kit';
 
 export const load = async ({ parent, cookies, url, locals }) => {
   const inviteKey = url.searchParams.get('key');
+  console.log('invite key:', inviteKey, 'EMA_INVITE_KEY:', env.EMA_INVITE_KEY);
   if (inviteKey !== env.EMA_INVITE_KEY) {
     throw Err.Invalid('invite key', inviteKey);
   }
