@@ -72,7 +72,7 @@ export class Service {
   }
 
   async setInvitedToken(cookies: Cookies, from: Date): Promise<void> {
-    tokens.invited.setToCookie(from, cookies, { invited: true });
+    await tokens.invited.setToCookie(from, cookies, { invited: true });
   }
 
   async getVoterToken(cookies: Cookies): Promise<Voter | undefined> {

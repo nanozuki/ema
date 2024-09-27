@@ -2,10 +2,11 @@ import { Err } from '$lib/domain/errors.js';
 import { env } from '$env/dynamic/private';
 import { redirect } from '@sveltejs/kit';
 
+const InviteKey = env.EMA_INVITE_KEY;
+
 export const load = async ({ parent, cookies, url, locals }) => {
   const inviteKey = url.searchParams.get('key');
-  console.log('invite key:', inviteKey, 'EMA_INVITE_KEY:', env.EMA_INVITE_KEY);
-  if (inviteKey !== env.EMA_INVITE_KEY) {
+  if (inviteKey !== InviteKey) {
     throw Err.Invalid('invite key', inviteKey);
   }
   const { service } = locals;
