@@ -135,14 +135,9 @@ export class WorkRepositoryImpl implements WorkRepository {
 
   async setWorkRanking(ranks: RankResultItem[]): Promise<void> {
     const op = async () => {
-      await this.db.transaction(
-        async (db) => {
-          for (const { workId, ranking } of ranks) {
-            await db.update(work).set({ ranking }).where(eq(work.id, workId));
-          }
-        },
-        { behavior: 'immediate' },
-      );
+      for (const { workId, ranking } of ranks) {
+        await this.db.update(work).set({ ranking }).where(eq(work.id, workId));
+      }
     };
     await Err.catch(op, (err) => Err.Database(`work.setWorkRanking(${ranks})`, err));
   }
