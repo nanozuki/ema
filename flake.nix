@@ -12,6 +12,8 @@
       perSystem = { config, self', inputs', pkgs, system, ... }: {
         devShells.default = pkgs.mkShell {
           packages = with pkgs; [
+            litecli
+            just
             # nodejs and typescript
             nodePackages.nodejs
             nodePackages.pnpm

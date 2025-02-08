@@ -256,13 +256,8 @@ export class VoteRepositoryImpl implements VoteRepository {
           .where(and(eq(vote.year, year), eq(vote.department, department), eq(vote.voterId, voterId)));
         const id = idRow[0].id;
         const rankingsRows = works.map((r) => ({ voteId: id, ranking: r.ranking!, workId: r.id }));
-        await this.db.transaction(
-          async (db) => {
-            await db.delete(rankingInVote).where(eq(rankingInVote.voteId, id));
-            await db.insert(rankingInVote).values(rankingsRows);
-          },
-          { behavior: 'immediate' },
-        );
+        await this.db.delete(rankingInVote).where(eq(rankingInVote.voteId, id));
+        await this.db.insert(rankingInVote).values(rankingsRows);
       },
       (err) => Err.Database(`vote.setVote(${year}, ${department}, ${voterId}, ${works})`, err),
     );
