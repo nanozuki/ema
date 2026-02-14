@@ -3,9 +3,13 @@
   import { Stage } from '$lib/domain/value';
   import type { Ceremony, Work } from '$lib/domain/entity';
 
-  export let ceremony: Ceremony;
-  export let bestWorks: Work[];
-  export let now: Date;
+  interface Props {
+    ceremony: Ceremony;
+    bestWorks: Work[];
+    now: Date;
+  }
+
+  let { ceremony, bestWorks, now }: Props = $props();
 
   function stageText(stage: Stage) {
     switch (stage) {
@@ -33,17 +37,17 @@
     }
   }
 
-  $: stage = getStage(ceremony, now);
-  $: texts = stage === Stage.Award ? bestWorks.map((w) => w.name) : [stageText(stage)];
-  $: count = texts.length;
-  $: el = stage === Stage.Preparation ? 'div' : 'a';
-  $: href = stageHref(stage);
+  let stage = $derived(getStage(ceremony, now));
+  let texts = $derived(stage === Stage.Award ? bestWorks.map((w) => w.name) : [stageText(stage)]);
+  let count = $derived(texts.length);
+  let el = $derived(stage === Stage.Preparation ? 'div' : 'a');
+  let href = $derived(stageHref(stage));
 </script>
 
 <svelte:element
   this={el}
   {...{ href }}
-  class="rounded flex flex-row items-end h-20"
+  class="rounded-sm flex flex-row items-end h-20"
   class:bg-iris={stage === Stage.Award}
   class:bg-pine={stage !== Stage.Award}
 >
@@ -56,7 +60,7 @@
       <p class="stage-text">{texts[0]}</p>
     {/if}
   </div>
-  <p class="whitespace-nowrap text-3xl leading-[5rem] font-serif font-black text-gold pl-2 pr-4">{ceremony.year}年</p>
+  <p class="whitespace-nowrap text-3xl leading-20 font-serif font-black text-gold pl-2 pr-4">{ceremony.year}年</p>
 </svelte:element>
 
 <style>

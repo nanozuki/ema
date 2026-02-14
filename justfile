@@ -7,6 +7,9 @@ image := "asia-southeast1-docker.pkg.dev/crows-moe/images/ema"
 default:
 	just --list
 
+sqlite:
+	@litecli -R 'local> ' (fd '.sqlite$' .wrangler)
+
 gen-migration:
 	pnpm drizzle-kit generate:pg
 

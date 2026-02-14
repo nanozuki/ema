@@ -1,16 +1,20 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
-  export let field: string;
-  export let label: string;
-  export let value: number;
-  export let error: string | undefined;
-  export let focusOnMount: boolean = false;
+  interface Props {
+    field: string;
+    label: string;
+    value: number;
+    error: string | undefined;
+    focusOnMount?: boolean;
+  }
 
-  let ref: HTMLInputElement;
-  onMount(() => {
-    if (focusOnMount) {
-      ref.focus();
+  let { field, label, value = $bindable(), error, focusOnMount = false }: Props = $props();
+
+  let inputRef: HTMLInputElement | undefined = $state();
+  $effect(() => {
+    if (inputRef && focusOnMount) {
+      inputRef.focus();
     }
   });
 </script>
@@ -21,9 +25,9 @@
 <input
   type="number"
   bind:value
-  bind:this={ref}
+  bind:this={inputRef}
   name={field}
   placeholder={label}
-  class={'w-full h-10 px-2 rounded bg-surface border-pine border-2 ' +
-    'focus:border-rose focus-visible:border-rose outline-none shadow-none'}
+  class={'w-full h-10 px-2 rounded-sm bg-surface border-pine border-2 ' +
+    'focus:border-rose focus-visible:border-rose outline-hidden shadow-none'}
 />

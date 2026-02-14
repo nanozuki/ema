@@ -2,14 +2,13 @@
   import { StringInput, PasswordInput } from '$lib/comp';
   import AuthForm from '../AuthForm.svelte';
 
-  export let data;
-  export let form;
+  let { data, form } = $props();
 
   const title = '登录';
   const description = '用户已存在，请输入密码登录。';
 
-  $: username = data?.username || form?.username;
-  $: focusOnMount = typeof username !== 'undefined';
+  let username = $derived(data?.username || form?.username);
+  let focusOnMount = $derived(typeof username !== 'undefined');
 </script>
 
 <AuthForm {title} {description} hasError={typeof form?.errors !== 'undefined'}>

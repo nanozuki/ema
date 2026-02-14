@@ -1,9 +1,19 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
 
-  export let title: string;
-  export let description: string;
-  export let hasError: boolean;
+  interface Props {
+    title: string;
+    description: string;
+    hasError: boolean;
+    children?: import('svelte').Snippet;
+  }
+
+  let {
+    title,
+    description,
+    hasError,
+    children
+  }: Props = $props();
 </script>
 
 <div class="bg-overlay py-8 px-6 -mx-6 mid:mx-0 flex flex-col gap-y-4">
@@ -15,8 +25,8 @@
   </div>
   <form method="POST" class="w-full wide:w-1/2" use:enhance>
     <div class="flex flex-col gap-y-1">
-      <slot />
+      {@render children?.()}
     </div>
-    <button type="submit" class="block w-full h-10 mt-6 px-2 rounded bg-pine text-base">确认</button>
+    <button type="submit" class="block w-full h-10 mt-6 px-2 rounded-sm bg-pine text-base">确认</button>
   </form>
 </div>

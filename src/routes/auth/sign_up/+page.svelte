@@ -2,15 +2,14 @@
   import { StringInput, PasswordInput } from '$lib/comp';
   import AuthForm from '../AuthForm.svelte';
 
-  export let data;
-  export let form;
+  let { data, form } = $props();
 
   const title = '注册用户';
   const description =
     '请使用<span class="mx-1">telegram</span>的<span class="mx-1">ID</span>或者用户名作为账户的用户名。';
-  $: username = data?.username || form?.username;
-  $: focusOnMount = typeof username !== 'undefined';
-  $: invited = data.invited;
+  let username = $derived(data?.username || form?.username);
+  let focusOnMount = $derived(typeof username !== 'undefined');
+  let invited = $derived(data.invited);
 </script>
 
 {#if invited}

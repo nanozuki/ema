@@ -5,14 +5,13 @@
   import ChevronLeft from '~icons/material-symbols/chevron-left';
   import ChevronRight from '~icons/material-symbols/chevron-right';
 
-  export let data;
-  export let form;
+  let { data, form } = $props();
 
-  $: deptTotal = data.ceremony.departments.length;
-  $: deptIndex = data.ceremony.departments.indexOf(data.department);
-  $: deptInfo = departmentInfo(data.ceremony.year)[data.department];
-  $: next = deptIndex < deptTotal - 1 ? data.ceremony.departments[deptIndex + 1] : null;
-  $: prev = deptIndex > 0 ? data.ceremony.departments[deptIndex - 1] : null;
+  let deptTotal = $derived(data.ceremony.departments.length);
+  let deptIndex = $derived(data.ceremony.departments.indexOf(data.department));
+  let deptInfo = $derived(departmentInfo(data.ceremony.year)[data.department]);
+  let next = $derived(deptIndex < deptTotal - 1 ? data.ceremony.departments[deptIndex + 1] : null);
+  let prev = $derived(deptIndex > 0 ? data.ceremony.departments[deptIndex - 1] : null);
 </script>
 
 <!-- Title --->
@@ -68,7 +67,7 @@
 
 <form class="flex flex-col gap-y-2 mid:grid mid:grid-cols-nomination mid:gap-x-2 items-end" method="POST">
   <StringInput field="workName" label="作品名称" value={form?.workName} error={form?.errors?.workName} required />
-  <button class="bg-pine text-base w-full px-8 h-10 rounded" type="submit">提交提名</button>
+  <button class="bg-pine text-base w-full px-8 h-10 rounded-sm" type="submit">提交提名</button>
 </form>
 
 <!-- Navigation --->
@@ -78,7 +77,7 @@
     {#if prev}
       <a
         href={`/${data.ceremony.year}/nominations/${prev}`}
-        class="flex gap-y-2 justify-start pl-1 items-center text-pine bg-highlight-med flex-1 rounded"
+        class="flex gap-y-2 justify-start pl-1 items-center text-pine bg-highlight-med flex-1 rounded-sm"
       >
         <ChevronLeft class="block text-2xl text-rose" />
         <p class="text-text leading-10">上一步</p>
@@ -87,7 +86,7 @@
     {#if next}
       <a
         href={`/${data.ceremony.year}/nominations/${next}`}
-        class="flex gap-y-2 justify-end pr-1 items-center text-pine bg-highlight-med flex-1 rounded"
+        class="flex gap-y-2 justify-end pr-1 items-center text-pine bg-highlight-med flex-1 rounded-sm"
       >
         <p class="text-text leading-10">下一步</p>
         <ChevronRight class="block text-2xl text-rose" />
@@ -95,7 +94,7 @@
     {:else}
       <a
         href={`/${data.ceremony.year}/nominations/thanks`}
-        class="flex gap-y-2 justify-end pr-1 items-center text-pine bg-highlight-med flex-1 rounded"
+        class="flex gap-y-2 justify-end pr-1 items-center text-pine bg-highlight-med flex-1 rounded-sm"
       >
         <p class="text-text leading-10">完成</p>
         <ChevronRight class="block text-2xl text-rose" />

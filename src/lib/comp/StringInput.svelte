@@ -1,9 +1,19 @@
 <script lang="ts">
-  export let field: string;
-  export let label: string;
-  export let value: string = '';
-  export let error: string | undefined;
-  export let required: boolean = false;
+  interface Props {
+    field: string;
+    label: string;
+    value?: string;
+    error: string | undefined;
+    required?: boolean;
+  }
+
+  let {
+    field,
+    label,
+    value = $bindable(''),
+    error,
+    required = false
+  }: Props = $props();
 </script>
 
 <div class="w-full flex flex-col gap-y-1">
@@ -16,7 +26,7 @@
     name={field}
     placeholder={label}
     {required}
-    class={'w-full h-10 px-2 rounded bg-surface border-pine border-2 ' +
-      'focus:border-rose focus-visible:border-rose outline-none shadow-none'}
+    class={'w-full h-10 px-2 rounded-sm bg-surface border-pine border-2 ' +
+      'focus:border-rose focus-visible:border-rose outline-hidden shadow-none'}
   />
 </div>

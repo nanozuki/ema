@@ -1,8 +1,8 @@
-import type { Actions } from './$types';
+import type { Actions, PageServerLoad } from './$types';
 import { fail } from '@sveltejs/kit';
 import { parseDepartment } from '$lib/domain/entity';
 
-export async function load({ params, parent, locals }) {
+export const load: PageServerLoad = async ({ params, parent, locals }) => {
   const pd = await parent();
   const department = parseDepartment(pd.ceremony, params.dept);
   const { service } = locals;
@@ -19,7 +19,7 @@ export async function load({ params, parent, locals }) {
     department,
     works: works,
   };
-}
+};
 
 type VoteForm =
   | { rankings: Map<number, number> }

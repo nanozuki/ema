@@ -1,10 +1,10 @@
-import type { Actions } from './$types';
+import type { Actions, PageServerLoad } from './$types';
 import { fail } from '@sveltejs/kit';
 import { parseDepartment } from '$lib/domain/entity';
 import { Err } from '$lib/domain/errors';
 import { P, match } from 'ts-pattern';
 
-export async function load({ params, parent, locals }) {
+export const load: PageServerLoad = async ({ params, parent, locals }) => {
   const pd = await parent();
   const { service } = locals;
   const department = parseDepartment(pd.ceremony, params.dept);
@@ -12,7 +12,7 @@ export async function load({ params, parent, locals }) {
     department,
     noms: await service.getWorksInDept(pd.ceremony.year, department),
   };
-}
+};
 
 type NominationForm = { workName: string } | { workName?: string; errors: { workName: string } };
 
