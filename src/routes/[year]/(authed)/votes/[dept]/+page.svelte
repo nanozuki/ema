@@ -15,8 +15,8 @@
   let { data, form }: Props = $props();
   let inputed = $state(false);
 
-  const getWork = $state((work: Work, f?: ActionData) => {
-    let formRanking = f?.rankings.get(work.id) || 0;
+  const getWork = $derived((work: Work) => {
+    let formRanking = form?.rankings.get(work.id) || 0;
     work.ranking = formRanking > 0 ? formRanking : work.ranking;
     return work;
   });
@@ -25,7 +25,7 @@
     location.reload();
   };
 
-  let works = $derived(data.works.map((work) => getWork(work, form)));
+  let works = $derived(data.works.map((work) => getWork(work)));
   let deptTotal = $derived(data.ceremony.departments.length);
   let deptIndex = $derived(data.ceremony.departments.indexOf(data.department));
   let deptInfo = $derived(departmentInfo(data.ceremony.year)[data.department]);
