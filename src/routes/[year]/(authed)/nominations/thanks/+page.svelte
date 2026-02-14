@@ -1,9 +1,9 @@
 <script lang="ts">
   import { dataString } from '$lib/domain/entity.js';
   import ChevronLeft from '~icons/material-symbols/chevron-left';
-  export let data;
+  let { data } = $props();
 
-  $: home = `/${data.ceremony.year}/nominations/${data.ceremony.departments[0]}`;
+  let home = $derived(`/${data.ceremony.year}/nominations/${data.ceremony.departments[0]}`);
 </script>
 
 <a href={home} class="text-2xl font-serif font-bold leading-normal">
@@ -21,7 +21,7 @@
 
 <div class="flex flex-col gap-y-4">
   <div class="flex gap-x-2">
-    <a href="/" class="flex gap-y-2 justify-start pl-1 items-center text-pine bg-highlight-med flex-1 rounded">
+    <a href="/" class="flex gap-y-2 justify-start pl-1 items-center text-pine bg-highlight-med flex-1 rounded-sm">
       <ChevronLeft class="block text-2xl text-rose" />
       <p class="text-text leading-10">返回首页</p>
     </a>

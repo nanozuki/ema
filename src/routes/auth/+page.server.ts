@@ -1,4 +1,3 @@
-import { getLocalService } from '$lib/server';
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions } from './$types';
 import { Err } from '$lib/domain/errors';

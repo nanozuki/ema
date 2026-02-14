@@ -1,11 +1,15 @@
 <script lang="ts">
-  export let total: number;
-  export let current: number;
+  interface Props {
+    total: number;
+    current: number;
+  }
+
+  let { total, current }: Props = $props();
 </script>
 
 <div class="flex flex-row">
   <svg
-    class="w-[0.6875rem] h-2"
+    class="w-2.75 h-2"
     width="11"
     height="8"
     viewBox="0 0 11 8"
@@ -23,19 +27,19 @@
     </defs>
   </svg>
 
-  <div class="flex flex-row gap-x-[0.125rem] w-[calc(100%-1.375rem)]">
+  <div class="flex flex-row gap-x-0.5 w-[calc(100%-1.375rem)]">
     {#each Array(total) as _, i}
       <div
-        class="flex-1 h-2 [transform:matrix(1,0,-0.5,1,0,0)]"
+        class="flex-1 h-2 transform-[matrix(1,0,-0.5,1,0,0)]"
         class:bg-rose={i < current}
         class:bg-love={i === current}
         class:bg-overlay={i > current}
-      />
+></div>
     {/each}
   </div>
 
   <svg
-    class="w-[0.6875rem] h-2"
+    class="w-2.75 h-2"
     width="11"
     height="8"
     viewBox="0 0 11 8"

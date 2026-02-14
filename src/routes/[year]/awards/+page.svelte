@@ -2,7 +2,7 @@
   import { orderedDepartments } from '$lib/domain/value';
   import Highlight from './Highlight.svelte';
 
-  export let data;
+  let { data } = $props();
 </script>
 
 {#each orderedDepartments as dept (dept)}

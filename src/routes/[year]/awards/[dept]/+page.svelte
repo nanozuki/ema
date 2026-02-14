@@ -1,7 +1,7 @@
 <script lang="ts">
   import { departmentTitle } from '$lib/assets';
 
-  export let data;
+  let { data } = $props();
 </script>
 
 <p class="text-xl font-serif font-bold">{departmentTitle[data.department]}<span class="mx-1.5">·</span>详情</p>

@@ -7,26 +7,30 @@
   import { departmentInfo } from '$lib/assets';
   import { enhance } from '$app/forms';
 
-  export let data: PageData;
-  export let form: ActionData;
-  let inputed = false;
+  interface Props {
+    data: PageData;
+    form: ActionData;
+  }
 
-  const getWork = (work: Work, f?: ActionData) => {
+  let { data, form }: Props = $props();
+  let inputed = $state(false);
+
+  const getWork = $state((work: Work, f?: ActionData) => {
     let formRanking = f?.rankings.get(work.id) || 0;
     work.ranking = formRanking > 0 ? formRanking : work.ranking;
     return work;
-  };
+  });
 
   const resetForm = () => {
     location.reload();
   };
 
-  $: works = data.works.map((work) => getWork(work, form));
-  $: deptTotal = data.ceremony.departments.length;
-  $: deptIndex = data.ceremony.departments.indexOf(data.department);
-  $: deptInfo = departmentInfo(data.ceremony.year)[data.department];
-  $: next = deptIndex < deptTotal - 1 ? data.ceremony.departments[deptIndex + 1] : null;
-  $: prev = deptIndex > 0 ? data.ceremony.departments[deptIndex - 1] : null;
+  let works = $derived(data.works.map((work) => getWork(work, form)));
+  let deptTotal = $derived(data.ceremony.departments.length);
+  let deptIndex = $derived(data.ceremony.departments.indexOf(data.department));
+  let deptInfo = $derived(departmentInfo(data.ceremony.year)[data.department]);
+  let next = $derived(deptIndex < deptTotal - 1 ? data.ceremony.departments[deptIndex + 1] : null);
+  let prev = $derived(deptIndex > 0 ? data.ceremony.departments[deptIndex - 1] : null);
 </script>
 
 <!-- Title --->
@@ -84,8 +88,8 @@
         name={work.id.toString()}
         bind:value={work.ranking}
         min="1"
-        class="h-8 w-8 text-center leading-7 bg-surface rounded border-2 border-pine self-center focus:border-rose focus-visible:border-rose outline-none shadow-none"
-        on:input={() => (inputed = true)}
+        class="h-8 w-8 text-center leading-7 bg-surface rounded-sm border-2 border-pine self-center focus:border-rose focus-visible:border-rose outline-hidden shadow-none"
+        oninput={() => (inputed = true)}
       />
       <Nomination {work} />
     </div>
@@ -93,7 +97,7 @@
 
   {#if inputed}
     <div class="flex gap-x-2">
-      <Button variant="negative" on:click={resetForm}>取消</Button>
+      <Button variant="negative" onclick={resetForm}>取消</Button>
       <Button type="submit">提交</Button>
     </div>
   {/if}
@@ -107,7 +111,7 @@
       {#if prev}
         <a
           href={`/${data.ceremony.year}/votes/${prev}`}
-          class="flex gap-y-2 justify-start pl-1 items-center text-pine bg-highlight-med flex-1 rounded"
+          class="flex gap-y-2 justify-start pl-1 items-center text-pine bg-highlight-med flex-1 rounded-sm"
         >
           <ChevronLeft class="block text-2xl text-rose" />
           <p class="text-text leading-10">上一步</p>
@@ -116,7 +120,7 @@
       {#if next}
         <a
           href={`/${data.ceremony.year}/votes/${next}`}
-          class="flex gap-y-2 justify-end pr-1 items-center text-pine bg-highlight-med flex-1 rounded"
+          class="flex gap-y-2 justify-end pr-1 items-center text-pine bg-highlight-med flex-1 rounded-sm"
         >
           <p class="text-text leading-10">下一步</p>
           <ChevronRight class="block text-2xl text-rose" />
@@ -124,7 +128,7 @@
       {:else}
         <a
           href={`/${data.ceremony.year}/votes/thanks`}
-          class="flex gap-y-2 justify-end pr-1 items-center text-pine bg-highlight-med flex-1 rounded"
+          class="flex gap-y-2 justify-end pr-1 items-center text-pine bg-highlight-med flex-1 rounded-sm"
         >
           <p class="text-text leading-10">完成</p>
           <ChevronRight class="block text-2xl text-rose" />

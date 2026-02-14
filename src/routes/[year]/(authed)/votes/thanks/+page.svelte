@@ -2,9 +2,13 @@
   import ChevronLeft from '~icons/material-symbols/chevron-left';
   import type { PageData } from './$types';
   import { dataString } from '$lib/domain/entity';
-  export let data: PageData;
+  interface Props {
+    data: PageData;
+  }
 
-  $: home = `/${data.ceremony.year}/votes/${data.ceremony.departments[0]}`;
+  let { data }: Props = $props();
+
+  let home = $derived(`/${data.ceremony.year}/votes/${data.ceremony.departments[0]}`);
 </script>
 
 <a href={home} class="text-2xl font-serif font-bold leading-normal">
@@ -22,7 +26,7 @@
 
 <div class="flex flex-col gap-y-4">
   <div class="flex gap-x-2">
-    <a href="/" class="flex gap-y-2 justify-start pl-1 items-center text-pine bg-highlight-med flex-1 rounded">
+    <a href="/" class="flex gap-y-2 justify-start pl-1 items-center text-pine bg-highlight-med flex-1 rounded-sm">
       <ChevronLeft class="block text-2xl text-rose" />
       <p class="text-text leading-10">返回首页</p>
     </a>

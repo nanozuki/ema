@@ -22,13 +22,11 @@ export const work = sqliteTable(
     aliases: text('aliases', { mode: 'json' }).$type<string[]>(),
     ranking: integer('ranking'),
   },
-  (table) => {
-    return {
-      nameIdx: index('work_name_idx').on(table.year, table.department, table.name),
-      originNameIdx: index('work_origin_name_idx').on(table.year, table.department, table.originName),
-      aliasesIdx: index('work_aliases_idx').on(table.year, table.department, table.aliases),
-    };
-  },
+  (table) => [
+    index('work_name_idx').on(table.year, table.department, table.name),
+    index('work_origin_name_idx').on(table.year, table.department, table.originName),
+    index('work_aliases_idx').on(table.year, table.department, table.aliases),
+  ],
 );
 
 export const voter = sqliteTable('voter', {
@@ -49,12 +47,10 @@ export const vote = sqliteTable(
       .references(() => voter.id),
     department: text('department').$type<Department>().notNull(),
   },
-  (table) => {
-    return {
-      voterIdx: index('vote_voter_id_idx').on(table.voterId),
-      yearDepartmentVoteIdx: unique('vote_year_department_voter_idx').on(table.year, table.department, table.voterId),
-    };
-  },
+  (table) => [
+    index('vote_voter_id_idx').on(table.voterId),
+    unique('vote_year_department_voter_idx').on(table.year, table.department, table.voterId),
+  ],
 );
 
 export const rankingInVote = sqliteTable(
@@ -68,10 +64,8 @@ export const rankingInVote = sqliteTable(
       .references(() => work.id),
     ranking: integer('ranking').notNull(),
   },
-  (table) => {
-    return {
-      pk: primaryKey({ columns: [table.voteId, table.workId] }),
-      workIdIdx: index('ranking_in_vote_work_id_idx').on(table.workId),
-    };
-  },
+  (table) => [
+    primaryKey({ columns: [table.voteId, table.workId] }),
+    index('ranking_in_vote_work_id_idx').on(table.workId),
+  ],
 );

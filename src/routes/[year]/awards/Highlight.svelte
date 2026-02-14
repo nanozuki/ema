@@ -3,8 +3,12 @@
   import type { AwardRank } from '$lib/domain/entity';
   import { departmentTitle } from '$lib/assets';
 
-  export let department: Department;
-  export let rankedWorks: AwardRank[];
+  interface Props {
+    department: Department;
+    rankedWorks: AwardRank[];
+  }
+
+  let { department, rankedWorks }: Props = $props();
 
   // highlight works:
   // 1. Must contain the works those ranking are 1 and 2
@@ -23,8 +27,8 @@
     return highlight;
   }
 
-  $: highlight = getHighlight(rankedWorks);
-  $: title = departmentTitle[department];
+  let highlight = $derived(getHighlight(rankedWorks));
+  let title = $derived(departmentTitle[department]);
 </script>
 
 <div class="bg-overlay py-8 px-6 -mx-6 mid:mx-0 flex flex-col gap-y-6">

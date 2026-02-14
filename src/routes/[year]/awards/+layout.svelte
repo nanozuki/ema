@@ -1,6 +1,6 @@
 <script lang="ts">
-  export let data;
-  $: title = `Exodus 媒体艺术赏 - ${data.ceremony.year}年 - 获奖作品`;
+  let { data, children } = $props();
+  let title = $derived(`Exodus 媒体艺术赏 - ${data.ceremony.year}年 - 获奖作品`);
 </script>
 
 <svelte:head>
@@ -11,4 +11,4 @@
   {data.ceremony.year}年度<span class="mx-1.5">·</span>获奖作品
 </a>
 
-<slot />
+{@render children?.()}

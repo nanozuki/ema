@@ -1,6 +1,58 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@theme {
+  --color-*: initial;
+  --color-base: #faf4ed;
+  --color-surface: #fffaf3;
+  --color-overlay: #f2e9e1;
+  --color-muted: #9893a5;
+  --color-subtle: #797593;
+  --color-text: #575279;
+  --color-love: #b4637a;
+  --color-gold: #ea9d34;
+  --color-rose: #d7827e;
+  --color-pine: #286983;
+  --color-foam: #56949f;
+  --color-iris: #907aa9;
+
+  --color-highlight-low: #f4ede8;
+  --color-highlight-med: #dfdad9;
+  --color-highlight-high: #cecacd;
+
+  --font-*: initial;
+  --font-sans: Noto Sans SC, sans-serif;
+  --font-serif: Noto Serif SC, serif;
+  --font-monospace: monospace;
+
+  --breakpoint-*: initial;
+  --breakpoint-mid: 448px;
+  --breakpoint-wide: 688px;
+
+  --spacing-em: 1em;
+
+  --grid-template-columns-nomination: 1fr 10rem;
+  --grid-template-columns-ballot: 2rem minmax(2rem, 1fr);
+
+  --border-width-1: 1px;
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
 
 /* remove arrows of number input */
 /* Chrome, Safari, Edge, Opera */
