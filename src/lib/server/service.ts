@@ -1,4 +1,8 @@
-import type { Ceremony, Work, AwardRank, Voter } from '$lib/domain/entity';
+import { env } from '$env/dynamic/private';
+import type { AwardRank, Ceremony, Voter, Work } from '$lib/domain/entity';
+import { newAwardRank, parseDepartment } from '$lib/domain/entity';
+import { Err } from '$lib/domain/errors';
+import type { Department } from '$lib/domain/value';
 import type {
   CeremonyRepository,
   RankCalculator,
@@ -6,11 +10,8 @@ import type {
   VoterRepository,
   WorkRepository,
 } from '$lib/server/adapter';
-import type { Cookies } from '@sveltejs/kit';
-import type { Department } from '$lib/domain/value';
-import { Err } from '$lib/domain/errors';
-import { newAwardRank, parseDepartment } from '$lib/domain/entity';
 import { token } from '$lib/server/token';
+import type { Cookies } from '@sveltejs/kit';
 import { z } from 'zod';
 
 const tokens = {
@@ -65,6 +66,11 @@ export class Service {
 
   async getUserByName(username: string): Promise<Voter | undefined> {
     return await this.voterRepository.findVoter(username);
+  }
+
+  isInviteCodeValid(code: string): boolean {
+    const InviteKey = env.EMA_INVITE_KEY;
+    return code === InviteKey;
   }
 
   async setVoterToken(cookies: Cookies, from: Date, voter: Voter): Promise<void> {

@@ -56,7 +56,7 @@ async function catch_<T>(fn: () => T | Promise<T>, handler: (e: Error) => HttpEr
   }
 }
 
-type Result<T> = { ok: true; value: T } | { ok: false; error: HttpError };
+export type Result<T> = { ok: true; value: T } | { ok: false; error: HttpError };
 
 export const httpErrorPattern = {
   status: P.number,
@@ -81,6 +81,21 @@ async function match_<T>(fn: () => T | Promise<T>) {
       });
   }
   return match<Result<T>>(result);
+}
+
+function getError(e: unknown): HttpError {
+  if (e instanceof Error) {
+    return error(500, {
+      title: '错误',
+      message: e.message,
+      stack: e.stack,
+    });
+  } else {
+    return error(500, {
+      title: '错误',
+      message: JSON.stringify(e),
+    });
+  }
 }
 
 export const Err = {

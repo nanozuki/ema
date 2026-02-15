@@ -7,6 +7,9 @@ const config = {
   preprocess: vitePreprocess(),
 
   kit: {
+    experimental: {
+      remoteFunctions: true,
+    },
     // See https://kit.svelte.dev/docs/adapter-cloudflare
     adapter: adapter({
       routes: {
@@ -20,6 +23,11 @@ const config = {
         persist: true,
       },
     }),
+  },
+  compilerOptions: {
+    experimental: {
+      async: true,
+    },
   },
 };
 
