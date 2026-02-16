@@ -1,4 +1,4 @@
-export const enum Department {
+export enum Department {
   Anime = 'anime',
   MangaAndNovel = 'manga-novel',
   Game = 'game',
@@ -22,7 +22,7 @@ export const orderedDepartments = [
   Department.Music,
 ];
 
-export const enum Stage {
+export enum Stage {
   Preparation = 'Preparation',
   Nomination = 'Nomination',
   Voting = 'Voting',

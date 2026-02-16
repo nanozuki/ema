@@ -13,6 +13,7 @@ import type {
 import { token } from '$lib/server/token';
 import type { Cookies } from '@sveltejs/kit';
 import { z } from 'zod';
+import { getBangumiSubject } from './bangumi';
 
 const tokens = {
   voter: token<{ voter: Voter }>(
@@ -45,10 +46,14 @@ export class Service {
     return await this.workRepository.getWorksInDept(year, department);
   }
 
-  async addNomination(year: string, dept: string, workName: string): Promise<void> {
+  async addNomination(year: string, dept: string, workName: string, bangumiId?: number): Promise<void> {
     const ceremony = await this.ceremonyRepository.getByYear(parseInt(year));
     const department = parseDepartment(ceremony, dept);
-    return await this.workRepository.addNomination(ceremony.year, department as Department, workName);
+    if (!bangumiId) {
+      return await this.workRepository.addNomination(ceremony.year, department, workName);
+    }
+    const subject = await getBangumiSubject(bangumiId, department);
+    return await this.workRepository.addNominationBySubject(ceremony.year, subject);
   }
 
   async getBestWorks(): Promise<Map<number, Work[]>> {

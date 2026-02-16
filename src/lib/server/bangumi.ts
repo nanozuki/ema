@@ -39,39 +39,41 @@ function mapDepartmentToBangumiSubjectType(department: Department): BangumiSubje
   }
 }
 
-const searchSubjectsResponseSchema = z.object({
-  data: z.array(
+const subjectSchema = z.looseObject({
+  date: z.string(),
+  platform: z.string(),
+  images: z.looseObject({
+    small: z.string(),
+    grid: z.string(),
+    large: z.string(),
+    medium: z.string(),
+    common: z.string(),
+  }),
+  image: z.string(),
+  name: z.string(),
+  name_cn: z.string(),
+  infobox: z.array(
     z.looseObject({
-      date: z.string(),
-      platform: z.string(),
-      images: z.looseObject({
-        small: z.string(),
-        grid: z.string(),
-        large: z.string(),
-        medium: z.string(),
-        common: z.string(),
-      }),
-      image: z.string(),
-      name: z.string(),
-      name_cn: z.string(),
-      infobox: z.array(
-        z.looseObject({
-          key: z.string(),
-          value: z.string().or(
-            z.array(
-              z.looseObject({
-                v: z.string(),
-              }),
-            ),
-          ),
-        }),
+      key: z.string(),
+      value: z.string().or(
+        z.array(
+          z.looseObject({
+            v: z.string(),
+          }),
+        ),
       ),
-      id: z.number(),
-      total_episodes: z.number(),
-      meta_tags: z.array(z.string()),
-      type: bangumiSubjectTypeSchema,
     }),
   ),
+  id: z.number(),
+  total_episodes: z.number(),
+  meta_tags: z.array(z.string()),
+  type: bangumiSubjectTypeSchema,
+});
+
+type Subject = z.infer<typeof subjectSchema>;
+
+const searchSubjectsResponseSchema = z.object({
+  data: z.array(subjectSchema),
   total: z.number(),
   limit: z.number(),
   offset: z.number(),
@@ -112,14 +114,37 @@ async function callSearchSubjects(
   );
 }
 
-export type BangumiSubject = Work & {
+async function callGetSubject(id: number): Promise<Subject> {
+  const url = `https://api.bgm.tv/v0/subjects/${id}`;
+  return await Err.catch(
+    async () => {
+      const res = await fetch(url, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'User-Agent': userAgent,
+        },
+      });
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`Bangumi get subject failed (${res.status}): ${text}`);
+      }
+      const responseJson = await res.json();
+      return subjectSchema.parse(responseJson);
+    },
+    (err) => Err.Internal('get bangumi subject', err),
+  );
+}
+
+export type BangumiSubject = Omit<Work, 'id'> & {
+  bangumiId: number;
   tags: string[];
   date: string;
   image: string;
 };
 
-export async function searchBangumiSubjects(keyword: string, type: Department): Promise<BangumiSubject[]> {
-  const bgmType = mapDepartmentToBangumiSubjectType(type);
+export async function searchBangumiSubjects(keyword: string, department: Department): Promise<BangumiSubject[]> {
+  const bgmType = mapDepartmentToBangumiSubjectType(department);
   const request: SearchSubjectsRequest = {
     keyword,
     filter: {
@@ -128,9 +153,9 @@ export async function searchBangumiSubjects(keyword: string, type: Department): 
   };
   const response = await callSearchSubjects(request);
   return response.data.map((item) => ({
-    id: item.id,
+    bangumiId: item.id,
     year: new Date(item.date).getFullYear(),
-    department: type,
+    department: department,
     name: item.name_cn,
     originName: item.name,
     aliases: item.infobox
@@ -141,4 +166,22 @@ export async function searchBangumiSubjects(keyword: string, type: Department): 
     date: item.date,
     image: item.image,
   }));
+}
+
+export async function getBangumiSubject(id: number, department: Department): Promise<BangumiSubject> {
+  const item = await callGetSubject(id);
+  return {
+    bangumiId: item.id,
+    year: new Date(item.date).getFullYear(),
+    department,
+    name: item.name_cn,
+    originName: item.name,
+    aliases: item.infobox
+      .filter((info) => info.key === '别名')
+      .flatMap((info) => (typeof info.value === 'string' ? [info.value] : info.value.map((item) => item.v)))
+      .filter((alias) => alias !== item.name_cn && alias !== item.name),
+    tags: item.meta_tags,
+    date: item.date,
+    image: item.image,
+  };
 }

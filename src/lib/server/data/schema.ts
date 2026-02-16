@@ -21,6 +21,7 @@ export const work = sqliteTable(
     originName: text('origin_name'),
     aliases: text('aliases', { mode: 'json' }).$type<string[]>(),
     ranking: integer('ranking'),
+    bangumiId: integer('bangumi_id'),
   },
   (table) => [
     index('work_name_idx').on(table.year, table.department, table.name),
