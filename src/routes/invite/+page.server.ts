@@ -13,8 +13,9 @@ export const load: PageServerLoad = async ({ parent, cookies, url, locals }) => 
   const { service } = locals;
   const parentData = await parent();
   await service.setInvitedToken(cookies, parentData.now);
-  if (url.searchParams.has('redirect')) {
-    redirect(302, `/auth/sign_up?redirect=${encodeURIComponent(url.pathname)}`);
+  const redirectUrl = url.searchParams.get('redirect');
+  if (redirectUrl) {
+    redirect(302, `/auth/sign_up?redirect=${encodeURIComponent(redirectUrl)}&inviteCode=${inviteKey}`);
   }
   redirect(302, '/auth/sign_up');
 };
