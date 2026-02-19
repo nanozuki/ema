@@ -117,7 +117,7 @@ export class WorkRepositoryImpl implements WorkRepository {
           ),
         );
       if (works.length === 0) {
-        await this.db.insert(work).values({ year, department, name: workName });
+        await this.db.insert(work).values({ year, department, name: workName, originName: null });
       }
     };
     await Err.catch(operation, (err) => Err.Database(`work.addNomination(${year}, ${department}, ${workName})`, err));

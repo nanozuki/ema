@@ -16,9 +16,14 @@
   let nominatedNames = $derived.by(() => {
     const set = new Set<string>();
     for (const nom of data.noms) {
-      set.add(nom.name);
+      if (nom.name) {
+        set.add(nom.name);
+      }
     }
     return set;
+  });
+  $effect(() => {
+    console.log(nominatedNames);
   });
 </script>
 

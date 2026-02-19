@@ -53,7 +53,7 @@ const subjectSchema = z.looseObject({
     .nullish(),
   image: z.string().nullish(),
   name: z.string(),
-  name_cn: z.string(),
+  name_cn: z.string().nullish(),
   infobox: z.array(
     z.looseObject({
       key: z.string(),
@@ -158,7 +158,7 @@ function convertSubjectToBangumiSubject(item: Subject): BangumiSubject {
   }
   return {
     bangumiId: item.id,
-    name: item.name_cn,
+    name: item.name_cn || item.name,
     originName: item.name,
     aliases: item.infobox
       .filter((info) => info.key === '别名')
