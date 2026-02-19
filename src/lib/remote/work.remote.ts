@@ -16,23 +16,43 @@ export const searchWorksInBangumi = query(
       return [];
     }
     const works = await searchBangumiSubjects(keyword, department);
+    console.log('searchWorksInBangumi', { keyword, department, works });
     return works;
   },
 );
 
-export const postNomination = form(
+export const nominateWithBangumiId = form(
   z.object({
-    department: z.enum(Department),
-    workName: z.string().min(1, '不能为空'),
-    bangumiId: z.number().optional(),
+    bangumiId: z.string().min(1),
   }),
-  async ({ bangumiId, workName }, issue) => {
+  async ({ bangumiId }, issue) => {
     const { locals, params } = getRequestEvent();
     const { year, dept } = params;
     if (!year || !dept) {
       invalid('参数无效');
     }
-    return (await Err.match(() => locals.service.addNomination(year, dept, workName, bangumiId)))
+    const bangumiIdNum = parseInt(bangumiId);
+    if (isNaN(bangumiIdNum)) {
+      invalid(issue.bangumiId('必须是数字'));
+    }
+    return (await Err.match(() => locals.service.addNominationByBangumiId(year, dept, bangumiIdNum)))
+      .with({ ok: true, value: P._ }, () => {})
+      .with({ ok: false, error: P.select() }, (error) => {
+        invalid(issue.bangumiId(error.body.message));
+      })
+      .exhaustive();
+  },
+);
+
+export const nominateByWorkName = form(
+  z.object({ workName: z.string().min(1, '不能为空') }),
+  async ({ workName }, issue) => {
+    const { locals, params } = getRequestEvent();
+    const { year, dept } = params;
+    if (!year || !dept) {
+      invalid('参数无效');
+    }
+    return (await Err.match(() => locals.service.addNominationByWorkName(year, dept, workName)))
       .with({ ok: true, value: P._ }, () => {})
       .with({ ok: false, error: P.select() }, (error) => {
         invalid(issue.workName(error.body.message));

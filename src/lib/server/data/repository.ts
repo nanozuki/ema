@@ -123,7 +123,7 @@ export class WorkRepositoryImpl implements WorkRepository {
     await Err.catch(operation, (err) => Err.Database(`work.addNomination(${year}, ${department}, ${workName})`, err));
   }
 
-  async addNominationBySubject(year: number, subject: BangumiSubject): Promise<void> {
+  async addNominationBySubject(year: number, department: Department, subject: BangumiSubject): Promise<void> {
     const operation = async () => {
       const works = await this.db
         .select()
@@ -131,7 +131,7 @@ export class WorkRepositoryImpl implements WorkRepository {
         .where(
           and(
             eq(work.year, year),
-            eq(work.department, subject.department),
+            eq(work.department, department),
             or(
               eq(work.name, subject.name),
               eq(work.originName, subject.name),
@@ -142,16 +142,17 @@ export class WorkRepositoryImpl implements WorkRepository {
       if (works.length === 0) {
         await this.db.insert(work).values({
           year,
-          department: subject.department,
+          department,
           name: subject.name,
           originName: subject.originName,
           aliases: subject.aliases,
         });
       }
     };
-    await Err.catch(operation, (err) =>
-      Err.Database(`work.addNominationBySubject(${year}, ${JSON.stringify(subject)})`, err),
-    );
+    await Err.catch(operation, (err) => {
+      console.error(err);
+      return Err.Database(`work.addNominationBySubject(${year}, ${JSON.stringify(subject)})`, err);
+    });
   }
 
   async getById(id: number): Promise<Work> {

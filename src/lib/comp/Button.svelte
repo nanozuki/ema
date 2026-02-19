@@ -4,7 +4,6 @@
   type Variant = 'primary' | 'secondary' | 'negative' | 'disable';
   interface Props extends HTMLButtonAttributes {
     variant?: Variant;
-    type?: 'submit' | 'button';
     children?: import('svelte').Snippet;
   }
 
@@ -18,7 +17,6 @@
   class:bg-gold={variant === 'negative'}
   class:bg-muted={variant === 'disable'}
   disabled={variant === 'disable'}
-  {type}
   {...rest}
 >
   {@render children?.()}

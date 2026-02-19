@@ -13,7 +13,7 @@ export interface WorkRepository {
   getWorksInDept(year: number, department: Department): Promise<Work[]>;
   getById(id: number): Promise<Work | undefined>;
   addNomination(year: number, department: Department, workName: string): Promise<void>;
-  addNominationBySubject(year: number, subject: BangumiSubject): Promise<void>;
+  addNominationBySubject(year: number, department: Department, subject: BangumiSubject): Promise<void>;
   setWorkRanking(ranks: RankResultItem[]): Promise<void>;
 }
 

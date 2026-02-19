@@ -46,14 +46,17 @@ export class Service {
     return await this.workRepository.getWorksInDept(year, department);
   }
 
-  async addNomination(year: string, dept: string, workName: string, bangumiId?: number): Promise<void> {
+  async addNominationByWorkName(year: string, dept: string, workName: string): Promise<void> {
     const ceremony = await this.ceremonyRepository.getByYear(parseInt(year));
     const department = parseDepartment(ceremony, dept);
-    if (!bangumiId) {
-      return await this.workRepository.addNomination(ceremony.year, department, workName);
-    }
-    const subject = await getBangumiSubject(bangumiId, department);
-    return await this.workRepository.addNominationBySubject(ceremony.year, subject);
+    return await this.workRepository.addNomination(ceremony.year, department, workName);
+  }
+
+  async addNominationByBangumiId(year: string, dept: string, bangumiId: number): Promise<void> {
+    const ceremony = await this.ceremonyRepository.getByYear(parseInt(year));
+    const department = parseDepartment(ceremony, dept);
+    const subject = await getBangumiSubject(bangumiId);
+    return await this.workRepository.addNominationBySubject(ceremony.year, department, subject);
   }
 
   async getBestWorks(): Promise<Map<number, Work[]>> {

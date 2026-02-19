@@ -40,16 +40,18 @@ function mapDepartmentToBangumiSubjectType(department: Department): BangumiSubje
 }
 
 const subjectSchema = z.looseObject({
-  date: z.string(),
-  platform: z.string(),
-  images: z.looseObject({
-    small: z.string(),
-    grid: z.string(),
-    large: z.string(),
-    medium: z.string(),
-    common: z.string(),
-  }),
-  image: z.string(),
+  date: z.string().nullish(),
+  platform: z.string().nullish(),
+  images: z
+    .looseObject({
+      small: z.string().nullish(),
+      grid: z.string().nullish(),
+      large: z.string().nullish(),
+      medium: z.string().nullish(),
+      common: z.string().nullish(),
+    })
+    .nullish(),
+  image: z.string().nullish(),
   name: z.string(),
   name_cn: z.string(),
   infobox: z.array(
@@ -65,8 +67,8 @@ const subjectSchema = z.looseObject({
     }),
   ),
   id: z.number(),
-  total_episodes: z.number(),
-  meta_tags: z.array(z.string()),
+  total_episodes: z.number().nullish(),
+  meta_tags: z.array(z.string()).nullish(),
   type: bangumiSubjectTypeSchema,
 });
 
@@ -108,7 +110,16 @@ async function callSearchSubjects(
         throw new Error(`Bangumi search failed (${res.status}): ${text}`);
       }
       const responseJson = await res.json();
-      return searchSubjectsResponseSchema.parse(responseJson);
+      const result = searchSubjectsResponseSchema.safeParse(responseJson);
+      if (!result.success) {
+        console.error('Failed to parse search subject response', {
+          keyword: request.keyword,
+          responseJson,
+          error: result.error,
+        });
+        throw Err.Internal(`call bangumi api, searchSubjects(${request.keyword}), parse response failed`, result.error);
+      }
+      return result.data;
     },
     (err) => Err.Internal('search bangumi subjects', err),
   );
@@ -116,6 +127,7 @@ async function callSearchSubjects(
 
 async function callGetSubject(id: number): Promise<Subject> {
   const url = `https://api.bgm.tv/v0/subjects/${id}`;
+  console.log('callGetSubject', { id, url });
   return await Err.catch(
     async () => {
       const res = await fetch(url, {
@@ -130,18 +142,48 @@ async function callGetSubject(id: number): Promise<Subject> {
         throw new Error(`Bangumi get subject failed (${res.status}): ${text}`);
       }
       const responseJson = await res.json();
-      return subjectSchema.parse(responseJson);
+      const result = subjectSchema.safeParse(responseJson);
+      if (!result.success) {
+        console.error('Failed to parse bangumi subject response', { id, responseJson, error: result.error });
+        throw Err.Internal(`call bangumi api, getSubject(${id}), parse response failed`, result.error);
+      }
+      return result.data;
     },
     (err) => Err.Internal('get bangumi subject', err),
   );
 }
 
-export type BangumiSubject = Omit<Work, 'id'> & {
+export type BangumiSubject = Omit<Work, 'id' | 'year' | 'department'> & {
   bangumiId: number;
   tags: string[];
-  date: string;
-  image: string;
+  date?: string;
+  image?: string;
 };
+
+function convertSubjectToBangumiSubject(item: Subject): BangumiSubject {
+  const tagSet = new Set<string>();
+  if (item.platform) {
+    tagSet.add(item.platform);
+  }
+  if (item.total_episodes && item.total_episodes > 1) {
+    tagSet.add(`${item.total_episodes}话`);
+  }
+  if (item.meta_tags) {
+    item.meta_tags.forEach((tag) => tagSet.add(tag));
+  }
+  return {
+    bangumiId: item.id,
+    name: item.name_cn,
+    originName: item.name,
+    aliases: item.infobox
+      .filter((info) => info.key === '别名')
+      .flatMap((info) => (typeof info.value === 'string' ? [info.value] : info.value.map((item) => item.v)))
+      .filter((alias) => alias !== item.name_cn && alias !== item.name),
+    tags: Array.from(tagSet),
+    date: item.date ?? undefined,
+    image: item.image ?? item.images?.medium ?? undefined,
+  };
+}
 
 export async function searchBangumiSubjects(keyword: string, department: Department): Promise<BangumiSubject[]> {
   const bgmType = mapDepartmentToBangumiSubjectType(department);
@@ -152,36 +194,10 @@ export async function searchBangumiSubjects(keyword: string, department: Departm
     },
   };
   const response = await callSearchSubjects(request);
-  return response.data.map((item) => ({
-    bangumiId: item.id,
-    year: new Date(item.date).getFullYear(),
-    department: department,
-    name: item.name_cn,
-    originName: item.name,
-    aliases: item.infobox
-      .filter((info) => info.key === '别名')
-      .flatMap((info) => (typeof info.value === 'string' ? [info.value] : info.value.map((item) => item.v)))
-      .filter((alias) => alias !== item.name_cn && alias !== item.name),
-    tags: item.meta_tags,
-    date: item.date,
-    image: item.image,
-  }));
+  return response.data.map(convertSubjectToBangumiSubject);
 }
 
-export async function getBangumiSubject(id: number, department: Department): Promise<BangumiSubject> {
+export async function getBangumiSubject(id: number): Promise<BangumiSubject> {
   const item = await callGetSubject(id);
-  return {
-    bangumiId: item.id,
-    year: new Date(item.date).getFullYear(),
-    department,
-    name: item.name_cn,
-    originName: item.name,
-    aliases: item.infobox
-      .filter((info) => info.key === '别名')
-      .flatMap((info) => (typeof info.value === 'string' ? [info.value] : info.value.map((item) => item.v)))
-      .filter((alias) => alias !== item.name_cn && alias !== item.name),
-    tags: item.meta_tags,
-    date: item.date,
-    image: item.image,
-  };
+  return convertSubjectToBangumiSubject(item);
 }

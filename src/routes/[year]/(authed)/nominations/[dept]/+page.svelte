@@ -1,38 +1,17 @@
 <script lang="ts">
   import { departmentInfo } from '$lib/assets';
-  import { Dialog } from 'melt/builders';
-  import { TabLine, Nomination } from '$lib/comp';
-  import Input from '$lib/comp/Input.svelte';
+  import { Nomination, TabLine } from '$lib/comp';
   import { dataRangeString } from '$lib/domain/entity';
-  import * as workRemote from '$lib/remote/work.remote';
   import ChevronLeft from '~icons/material-symbols/chevron-left';
   import ChevronRight from '~icons/material-symbols/chevron-right';
-  import { tick } from 'svelte';
+  import NominationForm from './NominationForm.svelte';
 
   let { data } = $props();
-  const postNomination = (workRemote as Record<string, any>).postNomination;
-  const searchWorksInBangumi = (workRemote as Record<string, any>).searchWorksInBangumi;
   let deptTotal = $derived(data.ceremony.departments.length);
   let deptIndex = $derived(data.ceremony.departments.indexOf(data.department));
   let deptInfo = $derived(departmentInfo(data.ceremony.year)[data.department]);
   let next = $derived(deptIndex < deptTotal - 1 ? data.ceremony.departments[deptIndex + 1] : null);
   let prev = $derived(deptIndex > 0 ? data.ceremony.departments[deptIndex - 1] : null);
-  const dialog = new Dialog();
-  let workname = $state('');
-  let nominationForm: HTMLFormElement | null = null;
-  const bangumiWorks = $derived.by(() =>
-    searchWorksInBangumi({ keyword: workname.trim(), department: data.department }),
-  );
-  const nominateWork = async (name: string) => {
-    const trimmedName = name.trim();
-    if (!trimmedName) {
-      return;
-    }
-    workname = trimmedName;
-    postNomination.fields.workName.set(trimmedName);
-    await tick();
-    nominationForm?.requestSubmit();
-  };
 </script>
 
 <!-- Title --->
@@ -84,67 +63,7 @@
   </div>
 {/if}
 
-<!-- New Nomination Form --->
-
-<div class="flex flex-col gap-y-2 mid:grid mid:grid-cols-nomination mid:gap-x-2 items-end">
-  <button
-    {...dialog.trigger}
-    class={'w-full h-10 px-2 rounded-sm bg-surface border-pine border-1 ' +
-      'focus:border-rose focus-visible:border-rose outline-hidden shadow-none'}
-  >
-    添加新提名
-  </button>
-</div>
-
-<div class="bg-muted" {...dialog.overlay}></div>
-
-<dialog {...dialog.content} class="fixed inset-0 m-0 p-6 border-0 w-screen h-screen">
-  <Input
-    label="作品名称"
-    placeholder="作品名称"
-    issues={postNomination.fields.workName.issues()}
-    required
-    name="keyword"
-    type="text"
-    bind:value={workname}
-  />
-  <form
-    class="flex flex-col gap-y-2 mid:grid mid:grid-cols-nomination mid:gap-x-2 items-end"
-    {...postNomination}
-  >
-    <select {...postNomination.fields.}
-
-  </form>
-  {#if workname.trim()}
-    <div class="flex flex-col gap-y-2">
-      <p class="text-sm text-subtle leading-normal">Bangumi 搜索结果（点击作品即可提名）：</p>
-      {#if bangumiWorks.loading}
-        <p class="text-xs text-subtle leading-normal">搜索中...</p>
-      {:else if bangumiWorks.ready}
-        {@const works = bangumiWorks.current.slice(0, 5)}
-        {#if works.length === 0}
-          <p class="text-xs text-subtle leading-normal">未找到相关作品</p>
-        {:else}
-          <div class="flex flex-col gap-y-2">
-            {#each works as work (work.id)}
-              <button
-                type="button"
-                class="flex flex-col gap-y-1 text-left rounded-sm border border-pine/30 bg-surface px-3 py-2 hover:bg-highlight-med"
-                on:click={() => nominateWork(work.name || work.originName)}
-                disabled={postNomination.pending > 0}
-              >
-                <span class="text-text font-bold leading-normal">{work.name || work.originName}</span>
-                {#if work.name && work.originName && work.name !== work.originName}
-                  <span class="text-xs text-subtle leading-normal">{work.originName}</span>
-                {/if}
-              </button>
-            {/each}
-          </div>
-        {/if}
-      {/if}
-    </div>
-  {/if}
-</dialog>
+<NominationForm department={data.department} label={`在Bangumi中搜索${deptInfo.title}`} />
 
 <!-- Navigation --->
 

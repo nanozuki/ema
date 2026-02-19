@@ -3,7 +3,7 @@
   import type { HTMLInputAttributes } from 'svelte/elements';
 
   interface Props extends HTMLInputAttributes {
-    label: string;
+    label?: string;
     description?: string;
     error?: string;
     issues?: RemoteFormIssue[];
@@ -13,7 +13,7 @@
 </script>
 
 <div class="flex flex-col">
-  <label class="text-text text-sm font-bold leading-normal" for={name}>{label}</label>
+  {#if label}<label class="text-text text-sm font-bold leading-normal" for={name}>{label}</label>{/if}
   <div class="gap-y-2xs flex w-full flex-col">
     {#if description}<small class="text-subtle text-sm">{description}</small>{/if}
     {#if error}<small class="text-love">{error}</small>{/if}
