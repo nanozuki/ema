@@ -29,8 +29,7 @@
     {/each}
     <input
       bind:this={input}
-      class={'w-full h-10 px-2 rounded-sm bg-surface border-pine border-1 ' +
-        'focus:border-rose focus-visible:border-rose outline-hidden shadow-none'}
+      class={'w-full h-10 px-2 rounded-sm bg-surface border-pine border-1 text-text focus:border-rose focus-visible:border-rose outline-hidden shadow-none'}
       {name}
       bind:value
       {...rest}

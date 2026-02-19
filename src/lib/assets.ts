@@ -116,6 +116,11 @@ export const departmentInfo = (year: number): { [key in Department]: DepartmentI
   [Department.Music]: {
     title: '音乐',
     introduction: `${year}年内发表的，前述动画、游戏部门范围内的作品使用的单首音乐作品。`,
-    reference: [],
+    reference: [
+      {
+        description: `(bangumi) ${year}年音乐列表`,
+        url: `https://bangumi.tv/music/browser/airtime/${year}?sort=rank`,
+      },
+    ],
   },
 });

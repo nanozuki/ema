@@ -14,7 +14,7 @@
   let prev = $derived(deptIndex > 0 ? data.ceremony.departments[deptIndex - 1] : null);
 
   let nominatedNames = $derived.by(() => {
-    const set = new Set();
+    const set = new Set<string>();
     for (const nom of data.noms) {
       set.add(nom.name);
     }
