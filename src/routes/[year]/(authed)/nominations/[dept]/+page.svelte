@@ -12,6 +12,14 @@
   let deptInfo = $derived(departmentInfo(data.ceremony.year)[data.department]);
   let next = $derived(deptIndex < deptTotal - 1 ? data.ceremony.departments[deptIndex + 1] : null);
   let prev = $derived(deptIndex > 0 ? data.ceremony.departments[deptIndex - 1] : null);
+
+  let nominatedNames = $derived.by(() => {
+    const set = new Set();
+    for (const nom of data.noms) {
+      set.add(nom.name);
+    }
+    return set;
+  });
 </script>
 
 <!-- Title --->
@@ -54,16 +62,18 @@
 
 <!-- Nomination List --->
 
-{#if data.noms.length !== 0}
-  <div class="flex flex-col gap-y-2">
-    <p class="text-xl font-serif font-bold leading-normal">已获提名的作品：</p>
-    {#each data.noms as work (work.id)}
-      <Nomination {work} />
-    {/each}
-  </div>
-{/if}
+<div class="flex flex-col gap-y-4">
+  {#if data.noms.length !== 0}
+    <div class="flex flex-col gap-y-2">
+      <p class="text-xl font-serif font-bold leading-normal">已获提名的作品：</p>
+      {#each data.noms as work (work.id)}
+        <Nomination {work} />
+      {/each}
+    </div>
+  {/if}
 
-<NominationForm department={data.department} label={`在Bangumi中搜索${deptInfo.title}`} />
+  <NominationForm department={data.department} label={`在Bangumi中搜索${deptInfo.title}`} {nominatedNames} />
+</div>
 
 <!-- Navigation --->
 

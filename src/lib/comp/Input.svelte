@@ -9,6 +9,13 @@
     issues?: RemoteFormIssue[];
   }
 
+  let input: HTMLInputElement;
+  export function focus() {
+    if (input) {
+      input.focus();
+    }
+  }
+
   let { name, label, description, error, issues, value = $bindable(), ...rest }: Props = $props();
 </script>
 
@@ -21,6 +28,7 @@
       <small class="text-love">{issue.message}</small>
     {/each}
     <input
+      bind:this={input}
       class={'w-full h-10 px-2 rounded-sm bg-surface border-pine border-1 ' +
         'focus:border-rose focus-visible:border-rose outline-hidden shadow-none'}
       {name}
