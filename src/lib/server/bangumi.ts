@@ -165,8 +165,8 @@ function convertSubjectToBangumiSubject(item: Subject): BangumiSubject {
       .flatMap((info) => (typeof info.value === 'string' ? [info.value] : info.value.map((item) => item.v)))
       .filter((alias) => alias !== item.name_cn && alias !== item.name),
     tags: Array.from(tagSet),
-    date: item.date ?? undefined,
-    image: item.image ?? item.images?.medium ?? undefined,
+    date: item.date || undefined,
+    image: item.image || item.images?.medium || undefined,
   };
 }
 
