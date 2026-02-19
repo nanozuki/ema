@@ -145,6 +145,7 @@ export class WorkRepositoryImpl implements WorkRepository {
           department,
           name: subject.name,
           originName: subject.originName,
+          bangumiId: subject.bangumiId,
         });
       }
     };

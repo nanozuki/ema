@@ -2,7 +2,7 @@ import { form, getRequestEvent } from '$app/server';
 import { invalid } from '@sveltejs/kit';
 import { Err } from '$lib/domain/errors';
 import { P } from 'ts-pattern';
-import z from 'zod';
+import * as z from 'zod';
 import { redirect } from '@sveltejs/kit';
 
 export const signUp = form(

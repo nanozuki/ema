@@ -12,7 +12,7 @@ import type {
 } from '$lib/server/adapter';
 import { token } from '$lib/server/token';
 import type { Cookies } from '@sveltejs/kit';
-import { z } from 'zod';
+import * as z from 'zod';
 import { getBangumiSubject } from './bangumi';
 
 const tokens = {

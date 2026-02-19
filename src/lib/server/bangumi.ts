@@ -1,7 +1,7 @@
 import type { Work } from '$lib/domain/entity';
 import { Err } from '$lib/domain/errors';
 import { Department } from '$lib/domain/value';
-import { z } from 'zod';
+import * as z from 'zod';
 
 enum BangumiEnum {
   Book = 1,
@@ -110,16 +110,7 @@ async function callSearchSubjects(
         throw new Error(`Bangumi search failed (${res.status}): ${text}`);
       }
       const responseJson = await res.json();
-      const result = searchSubjectsResponseSchema.safeParse(responseJson);
-      if (!result.success) {
-        console.error('Failed to parse search subject response', {
-          keyword: request.keyword,
-          responseJson,
-          error: result.error,
-        });
-        throw Err.Internal(`call bangumi api, searchSubjects(${request.keyword}), parse response failed`, result.error);
-      }
-      return result.data;
+      return searchSubjectsResponseSchema.parse(responseJson);
     },
     (err) => Err.Internal('search bangumi subjects', err),
   );
@@ -127,7 +118,6 @@ async function callSearchSubjects(
 
 async function callGetSubject(id: number): Promise<Subject> {
   const url = `https://api.bgm.tv/v0/subjects/${id}`;
-  console.log('callGetSubject', { id, url });
   return await Err.catch(
     async () => {
       const res = await fetch(url, {
@@ -142,12 +132,7 @@ async function callGetSubject(id: number): Promise<Subject> {
         throw new Error(`Bangumi get subject failed (${res.status}): ${text}`);
       }
       const responseJson = await res.json();
-      const result = subjectSchema.safeParse(responseJson);
-      if (!result.success) {
-        console.error('Failed to parse bangumi subject response', { id, responseJson, error: result.error });
-        throw Err.Internal(`call bangumi api, getSubject(${id}), parse response failed`, result.error);
-      }
-      return result.data;
+      return subjectSchema.parse(responseJson);
     },
     (err) => Err.Internal('get bangumi subject', err),
   );

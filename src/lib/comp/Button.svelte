@@ -17,6 +17,7 @@
   class:bg-gold={variant === 'negative'}
   class:bg-muted={variant === 'disable'}
   disabled={variant === 'disable'}
+  {type}
   {...rest}
 >
   {@render children?.()}

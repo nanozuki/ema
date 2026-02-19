@@ -4,7 +4,7 @@ import { Department } from '$lib/domain/value';
 import { Err } from '$lib/domain/errors';
 import { searchBangumiSubjects } from '$lib/server/bangumi';
 import { P } from 'ts-pattern';
-import z from 'zod';
+import * as z from 'zod';
 
 export const searchWorksInBangumi = query(
   z.object({
@@ -16,7 +16,6 @@ export const searchWorksInBangumi = query(
       return [];
     }
     const works = await searchBangumiSubjects(keyword, department);
-    console.log('searchWorksInBangumi', { keyword, department, works });
     return works;
   },
 );
