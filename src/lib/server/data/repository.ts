@@ -11,7 +11,7 @@ import type {
 } from '$lib/server/adapter';
 import bcrypt from 'bcryptjs';
 import { and, desc, eq, gte, or, sql } from 'drizzle-orm';
-import { DrizzleD1Database } from 'drizzle-orm/d1';
+import type { DrizzleD1Database } from 'drizzle-orm/d1';
 import { ceremony, rankingInVote, vote, voter, work } from './schema';
 import type { BangumiSubject } from '../bangumi';
 
