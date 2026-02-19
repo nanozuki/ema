@@ -193,7 +193,7 @@ export async function searchBangumiSubjects(keyword: string, department: Departm
       type: [bgmType],
     },
   };
-  const response = await callSearchSubjects(request);
+  const response = await callSearchSubjects(request, 7);
   return response.data.map(convertSubjectToBangumiSubject);
 }
 

@@ -16,6 +16,7 @@
   let searchInput: Input;
   const dialog = new Dialog({
     onOpenChange: (opened) => {
+      keyword = '';
       if (opened && searchInput) {
         searchInput.focus();
       }
@@ -37,20 +38,17 @@
 
 <div class="bg-muted" {...dialog.overlay}></div>
 
-<dialog
-  {...dialog.content}
-  class="fixed inset-0 px-6 py-2 border-0 w-screen h-screen max-w-160 m-auto max-h-none bg-surface"
->
-  <div class="flex flex-col gap-y-3">
-    <button
-      onclick={() => {
-        dialog.open = false;
-      }}
-      class="rounded-sm py-1 text-text flex justify-start items-center gap-x-1"
-    >
-      <MdiClose />
-      <span class="font-serif font-bold">{label}</span>
-    </button>
+<dialog {...dialog.content} class="fixed inset-0 border-0 w-screen h-screen max-w-160 m-auto max-h-none bg-surface">
+  <button
+    onclick={() => {
+      dialog.open = false;
+    }}
+    class="py-3 text-text flex justify-start items-center gap-x-1 w-full px-6"
+  >
+    <MdiClose />
+    <span class="font-serif font-bold">{label}</span>
+  </button>
+  <div class="flex flex-col gap-y-3 px-6 pb-3 pt-0">
     <Input bind:this={searchInput} placeholder="作品名称" required name="keyword" type="text" bind:value={keyword} />
     <div class="flex flex-col gap-y-2">
       <div class="flex flex-col gap-y-2">
@@ -72,7 +70,6 @@
               {...form.enhance(async ({ form, submit }) => {
                 await submit();
                 form.reset();
-                keyword = '';
                 dialog.open = false;
               })}
             >
@@ -114,7 +111,6 @@
             {...nominateByWorkName.enhance(async ({ form, submit }) => {
               await submit();
               form.reset();
-              keyword = '';
               dialog.open = false;
             })}
           >
