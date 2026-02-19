@@ -1,32 +1,37 @@
 <script lang="ts">
-  import { enhance } from '$app/forms';
+  import type { RemoteFormIssue } from '@sveltejs/kit';
+  import type { Snippet } from 'svelte';
+  import type { HTMLFormAttributes } from 'svelte/elements';
 
-  interface Props {
+  interface Props extends HTMLFormAttributes {
     title: string;
-    description: string;
-    hasError: boolean;
-    children?: import('svelte').Snippet;
+    description?: string;
+    children: Snippet;
+    issues?: RemoteFormIssue[];
+    pending?: number;
   }
 
-  let {
-    title,
-    description,
-    hasError,
-    children
-  }: Props = $props();
+  let { title, description, issues = [], pending = 0, children, ...formProps }: Props = $props();
+  const hasError = $derived(issues.length > 0);
 </script>
 
-<div class="bg-overlay py-8 px-6 -mx-6 mid:mx-0 flex flex-col gap-y-4">
+<div class="flex flex-col gap-y-4">
   <div class="flex flex-col gap-y-1">
     <p class="text-xl font-serif font-bold leading-normal" class:text-love={hasError}>{title}</p>
-    <p class="text-subtle" class:text-love={hasError}>
-      {#if hasError}参数错误{:else}{@html description}{/if}
-    </p>
+    {#each issues as issue}
+      <p class="text-love">{issue.message}</p>
+    {:else}
+      {#if description}<p class="text-subtle">{description}</p>{/if}
+    {/each}
   </div>
-  <form method="POST" class="w-full wide:w-1/2" use:enhance>
-    <div class="flex flex-col gap-y-1">
-      {@render children?.()}
+  <form class="w-full wide:w-1/2" {...formProps}>
+    <div class="flex flex-col gap-y-2">
+      {@render children()}
     </div>
-    <button type="submit" class="block w-full h-10 mt-6 px-2 rounded-sm bg-pine text-base">确认</button>
+    <button
+      disabled={pending > 0}
+      type="submit"
+      class="block w-full h-10 mt-6 px-2 rounded-sm bg-pine text-base disabled:bg-muted">确认</button
+    >
   </form>
 </div>

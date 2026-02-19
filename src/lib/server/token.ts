@@ -1,6 +1,6 @@
 import { env } from '$env/dynamic/private';
 import type { Cookies } from '@sveltejs/kit';
-import type { z } from 'zod';
+import * as z from 'zod';
 import { SignJWT, jwtVerify, type JWTPayload } from 'jose';
 import { Err } from '$lib/domain/errors';
 

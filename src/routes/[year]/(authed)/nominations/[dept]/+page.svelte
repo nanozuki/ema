@@ -1,17 +1,25 @@
 <script lang="ts">
   import { departmentInfo } from '$lib/assets';
-  import { TabLine, StringInput, Nomination } from '$lib/comp';
+  import { Nomination, TabLine } from '$lib/comp';
   import { dataRangeString } from '$lib/domain/entity';
   import ChevronLeft from '~icons/material-symbols/chevron-left';
   import ChevronRight from '~icons/material-symbols/chevron-right';
+  import NominationForm from './NominationForm.svelte';
 
-  let { data, form } = $props();
-
+  let { data } = $props();
   let deptTotal = $derived(data.ceremony.departments.length);
   let deptIndex = $derived(data.ceremony.departments.indexOf(data.department));
   let deptInfo = $derived(departmentInfo(data.ceremony.year)[data.department]);
   let next = $derived(deptIndex < deptTotal - 1 ? data.ceremony.departments[deptIndex + 1] : null);
   let prev = $derived(deptIndex > 0 ? data.ceremony.departments[deptIndex - 1] : null);
+
+  let nominatedNames = $derived.by(() => {
+    const set = new Set<string>();
+    for (const nom of data.noms) {
+      set.add(nom.name);
+    }
+    return set;
+  });
 </script>
 
 <!-- Title --->
@@ -54,21 +62,18 @@
 
 <!-- Nomination List --->
 
-{#if data.noms.length !== 0}
-  <div class="flex flex-col gap-y-2">
-    <p class="text-xl font-serif font-bold leading-normal">已获提名的作品：</p>
-    {#each data.noms as work (work.id)}
-      <Nomination {work} />
-    {/each}
-  </div>
-{/if}
+<div class="flex flex-col gap-y-4">
+  {#if data.noms.length !== 0}
+    <div class="flex flex-col gap-y-2">
+      <p class="text-xl font-serif font-bold leading-normal">已获提名的作品：</p>
+      {#each data.noms as work (work.id)}
+        <Nomination {work} />
+      {/each}
+    </div>
+  {/if}
 
-<!-- New Nomination Form --->
-
-<form class="flex flex-col gap-y-2 mid:grid mid:grid-cols-nomination mid:gap-x-2 items-end" method="POST">
-  <StringInput field="workName" label="作品名称" value={form?.workName} error={form?.errors?.workName} required />
-  <button class="bg-pine text-base w-full px-8 h-10 rounded-sm" type="submit">提交提名</button>
-</form>
+  <NominationForm department={data.department} label={`在Bangumi中搜索${deptInfo.title}`} {nominatedNames} />
+</div>
 
 <!-- Navigation --->
 

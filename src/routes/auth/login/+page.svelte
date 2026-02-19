@@ -1,17 +1,18 @@
 <script lang="ts">
-  import { StringInput, PasswordInput } from '$lib/comp';
+  import Input from '$lib/comp/Input.svelte';
+  import { logIn } from '$lib/remote/auth.remote';
   import AuthForm from '../AuthForm.svelte';
+  import { page } from '$app/state';
 
-  let { data, form } = $props();
-
-  const title = '登录';
-  const description = '用户已存在，请输入密码登录。';
-
-  let username = $derived(data?.username || form?.username);
-  let focusOnMount = $derived(typeof username !== 'undefined');
+  const signUpUrl = $derived.by(() => {
+    const url = new URL(page.url);
+    url.pathname = '/auth/sign_up';
+    return url.toString();
+  });
 </script>
 
-<AuthForm {title} {description} hasError={typeof form?.errors !== 'undefined'}>
-  <StringInput field="username" label="用户名" value={username} error={form?.errors?.username} />
-  <PasswordInput {focusOnMount} field="password" label="密码" error={form?.errors?.password} />
+<AuthForm {...logIn} title="登录" issues={logIn.fields.issues()} pending={logIn.pending}>
+  <Input label="用户名" issues={logIn.fields.username.issues()} {...logIn.fields.username.as('text')} />
+  <Input label="密码" issues={logIn.fields.password.issues()} {...logIn.fields.password.as('password')} />
 </AuthForm>
+<p>没有账户？<a href={signUpUrl} class="text-pine">注册</a></p>

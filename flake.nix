@@ -32,6 +32,7 @@
               nodePackages.nodejs
               nodePackages.pnpm
               nodePackages.typescript
+              vtsls
               # tailwindcss
               nodePackages."@tailwindcss/language-server"
               # svelte

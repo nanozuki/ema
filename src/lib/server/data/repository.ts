@@ -13,6 +13,7 @@ import bcrypt from 'bcryptjs';
 import { and, desc, eq, gte, or, sql } from 'drizzle-orm';
 import { DrizzleD1Database } from 'drizzle-orm/d1';
 import { ceremony, rankingInVote, vote, voter, work } from './schema';
+import type { BangumiSubject } from '../bangumi';
 
 export class CeremonyRepositoryImpl implements CeremonyRepository {
   constructor(private db: DrizzleD1Database) {}
@@ -120,6 +121,38 @@ export class WorkRepositoryImpl implements WorkRepository {
       }
     };
     await Err.catch(operation, (err) => Err.Database(`work.addNomination(${year}, ${department}, ${workName})`, err));
+  }
+
+  async addNominationBySubject(year: number, department: Department, subject: BangumiSubject): Promise<void> {
+    const operation = async () => {
+      const works = await this.db
+        .select()
+        .from(work)
+        .where(
+          and(
+            eq(work.year, year),
+            eq(work.department, department),
+            or(
+              eq(work.name, subject.name),
+              eq(work.originName, subject.name),
+              sql`EXISTS (SELECT 1 FROM json_each(work.aliases) WHERE json_each.value = ${subject.name})`,
+            ),
+          ),
+        );
+      if (works.length === 0) {
+        await this.db.insert(work).values({
+          year,
+          department,
+          name: subject.name,
+          originName: subject.originName,
+          bangumiId: subject.bangumiId,
+        });
+      }
+    };
+    await Err.catch(operation, (err) => {
+      console.error(err);
+      return Err.Database(`work.addNominationBySubject(${year}, ${JSON.stringify(subject)})`, err);
+    });
   }
 
   async getById(id: number): Promise<Work> {

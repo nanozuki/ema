@@ -54,6 +54,10 @@
   }
 }
 
+* {
+  text-autospace: normal;
+}
+
 /* remove arrows of number input */
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,

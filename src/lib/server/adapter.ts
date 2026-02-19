@@ -1,5 +1,6 @@
 import type { Ceremony, Vote, Voter, Work } from '$lib/domain/entity';
 import type { Department } from '$lib/domain/value';
+import type { BangumiSubject } from './bangumi';
 
 export interface CeremonyRepository {
   getCeremonies(): Promise<Ceremony[]>;
@@ -12,6 +13,7 @@ export interface WorkRepository {
   getWorksInDept(year: number, department: Department): Promise<Work[]>;
   getById(id: number): Promise<Work | undefined>;
   addNomination(year: number, department: Department, workName: string): Promise<void>;
+  addNominationBySubject(year: number, department: Department, subject: BangumiSubject): Promise<void>;
   setWorkRanking(ranks: RankResultItem[]): Promise<void>;
 }
 

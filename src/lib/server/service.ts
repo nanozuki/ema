@@ -1,4 +1,8 @@
-import type { Ceremony, Work, AwardRank, Voter } from '$lib/domain/entity';
+import { env } from '$env/dynamic/private';
+import type { AwardRank, Ceremony, Voter, Work } from '$lib/domain/entity';
+import { newAwardRank, parseDepartment } from '$lib/domain/entity';
+import { Err } from '$lib/domain/errors';
+import type { Department } from '$lib/domain/value';
 import type {
   CeremonyRepository,
   RankCalculator,
@@ -6,12 +10,10 @@ import type {
   VoterRepository,
   WorkRepository,
 } from '$lib/server/adapter';
-import type { Cookies } from '@sveltejs/kit';
-import type { Department } from '$lib/domain/value';
-import { Err } from '$lib/domain/errors';
-import { newAwardRank, parseDepartment } from '$lib/domain/entity';
 import { token } from '$lib/server/token';
-import { z } from 'zod';
+import type { Cookies } from '@sveltejs/kit';
+import * as z from 'zod';
+import { getBangumiSubject } from './bangumi';
 
 const tokens = {
   voter: token<{ voter: Voter }>(
@@ -44,10 +46,17 @@ export class Service {
     return await this.workRepository.getWorksInDept(year, department);
   }
 
-  async addNomination(year: string, dept: string, workName: string): Promise<void> {
+  async addNominationByWorkName(year: string, dept: string, workName: string): Promise<void> {
     const ceremony = await this.ceremonyRepository.getByYear(parseInt(year));
     const department = parseDepartment(ceremony, dept);
-    return await this.workRepository.addNomination(ceremony.year, department as Department, workName);
+    return await this.workRepository.addNomination(ceremony.year, department, workName);
+  }
+
+  async addNominationByBangumiId(year: string, dept: string, bangumiId: number): Promise<void> {
+    const ceremony = await this.ceremonyRepository.getByYear(parseInt(year));
+    const department = parseDepartment(ceremony, dept);
+    const subject = await getBangumiSubject(bangumiId);
+    return await this.workRepository.addNominationBySubject(ceremony.year, department, subject);
   }
 
   async getBestWorks(): Promise<Map<number, Work[]>> {
@@ -65,6 +74,11 @@ export class Service {
 
   async getUserByName(username: string): Promise<Voter | undefined> {
     return await this.voterRepository.findVoter(username);
+  }
+
+  isInviteCodeValid(code: string): boolean {
+    const InviteKey = env.EMA_INVITE_KEY;
+    return code === InviteKey;
   }
 
   async setVoterToken(cookies: Cookies, from: Date, voter: Voter): Promise<void> {

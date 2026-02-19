@@ -144,3 +144,10 @@ export interface Vote {
   department: Department;
   rankings: Work[];
 }
+
+export type BangumiSubject = Omit<Work, 'id'> & {
+  bangumiId: number;
+  tags: string[];
+  date: string;
+  image: string;
+};
