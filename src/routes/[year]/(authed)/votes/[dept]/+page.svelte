@@ -3,7 +3,7 @@
   import ChevronRight from '~icons/material-symbols/chevron-right';
   import type { ActionData, PageData } from './$types';
   import { Button, Nomination, TabLine } from '$lib/comp';
-  import { dataRangeString, type Work } from '$lib/domain/entity';
+  import { dataRangeString } from '$lib/domain/entity';
   import { departmentInfo } from '$lib/assets';
   import { enhance } from '$app/forms';
 
@@ -15,17 +15,19 @@
   let { data, form }: Props = $props();
   let inputed = $state(false);
 
-  const getWork = $derived((work: Work) => {
-    let formRanking = form?.rankings.get(work.id) || 0;
-    work.ranking = formRanking > 0 ? formRanking : work.ranking;
-    return work;
-  });
-
   const resetForm = () => {
     location.reload();
   };
 
-  let works = $derived(data.works.map((work) => getWork(work)));
+  let works = $derived.by(() => {
+    return data.works.map((work) => {
+      const formRanking = form?.rankings.get(work.id) || 0;
+      if (formRanking > 0) {
+        work.ranking = formRanking;
+      }
+      return work;
+    });
+  });
   let deptTotal = $derived(data.ceremony.departments.length);
   let deptIndex = $derived(data.ceremony.departments.indexOf(data.department));
   let deptInfo = $derived(departmentInfo(data.ceremony.year)[data.department]);
