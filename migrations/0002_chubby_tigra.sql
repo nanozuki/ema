@@ -1,0 +1,1 @@
+ALTER TABLE `work` ADD `youtube_id` text;

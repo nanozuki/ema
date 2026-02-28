@@ -12,4 +12,22 @@
   {#each subNamesOfWork(work) as name (name)}
     <p class="text-subtle">{name}</p>
   {/each}
+  {#if work.bangumiId || work.youtubeId}
+    <div class="flex items-center justify-start gap-x-2">
+      {#if work.bangumiId}
+        <a href={`https://bgm.tv/subject/${work.bangumiId}`} target="_blank" class="text-pine text-sm underline">
+          Bangumi
+        </a>
+      {/if}
+      {#if work.youtubeId}
+        <a
+          href={`https://www.youtube.com/watch?v=${work.youtubeId}`}
+          target="_blank"
+          class="text-pine text-sm underline"
+        >
+          YouTube
+        </a>
+      {/if}
+    </div>
+  {/if}
 </div>

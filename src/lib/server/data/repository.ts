@@ -37,7 +37,17 @@ export class CeremonyRepositoryImpl implements CeremonyRepository {
   }
 }
 
-function modelToWork({ id, year, department, name, originName, aliases, ranking }: typeof work.$inferSelect): Work {
+function modelToWork({
+  id,
+  year,
+  department,
+  name,
+  originName,
+  aliases,
+  ranking,
+  bangumiId,
+  youtubeId,
+}: typeof work.$inferSelect): Work {
   return {
     id,
     year,
@@ -46,6 +56,8 @@ function modelToWork({ id, year, department, name, originName, aliases, ranking 
     originName: originName || name,
     aliases: aliases || [],
     ranking: ranking || undefined,
+    bangumiId: bangumiId || undefined,
+    youtubeId: youtubeId || undefined,
   };
 }
 

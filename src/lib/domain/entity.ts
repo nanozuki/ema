@@ -80,6 +80,8 @@ export interface Work {
   originName: string;
   aliases: string[];
   ranking?: number;
+  bangumiId?: number;
+  youtubeId?: string;
 }
 
 export function subNamesOfWork(w: Work): string[] {
