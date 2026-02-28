@@ -15,7 +15,7 @@
   {#if work.bangumiId || work.youtubeId}
     <div class="flex items-center justify-start gap-x-2">
       {#if work.bangumiId}
-        <a href={`https://bgm.tv/subject/${work.bangumiId}`} target="_blank" class="text-pine text-sm underline">
+        <a href={`https://bangumi.tv/subject/${work.bangumiId}`} target="_blank" class="text-pine text-sm underline">
           Bangumi
         </a>
       {/if}
