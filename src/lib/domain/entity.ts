@@ -139,14 +139,6 @@ export async function verifyPassword(password: string, salt: string, hash: strin
   return hash === (await hashPassword(password, salt));
 }
 
-export interface Vote {
-  id: number;
-  year: number;
-  voterId: number;
-  department: Department;
-  rankings: Work[];
-}
-
 export type BangumiSubject = Omit<Work, 'id'> & {
   bangumiId: number;
   tags: string[];

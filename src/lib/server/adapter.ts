@@ -1,4 +1,4 @@
-import type { Ceremony, Vote, Voter, Work } from '$lib/domain/entity';
+import type { Ceremony, Voter, Work } from '$lib/domain/entity';
 import type { Department } from '$lib/domain/value';
 import type { BangumiSubject } from './bangumi';
 
@@ -36,7 +36,7 @@ export interface RankResultItem {
 }
 
 export interface VoteRepository {
-  getVote(year: number, department: Department, voterId: number): Promise<Vote | undefined>;
+  getVote(year: number, department: Department, voterId: number): Promise<Work[]>;
   setVote(year: number, department: Department, voterId: number, rankings: Work[]): Promise<void>;
   getVotes(year: number, department: Department): Promise<VoteItem[]>;
 }

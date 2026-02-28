@@ -42,6 +42,10 @@ function Invalid(type: string, value: unknown): HttpError {
   return error(400, { title: '参数错误', message: `Invalid ${type}: ${JSON.stringify(value)}` });
 }
 
+function Unauthorized(): HttpError {
+  return error(401, { title: '未授权', message: 'Unauthorized' });
+}
+
 async function catch_<T>(fn: () => T | Promise<T>, handler: (e: Error) => HttpError): Promise<T> {
   try {
     return await fn();
@@ -104,6 +108,7 @@ export const Err = {
   Unknown,
   NotFound,
   Invalid,
+  Unauthorized,
   catch: catch_,
   match: match_,
 };

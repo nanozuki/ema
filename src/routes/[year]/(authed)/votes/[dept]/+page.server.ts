@@ -7,16 +7,6 @@ export const load: PageServerLoad = async ({ params, parent, locals }) => {
   const department = parseDepartment(pd.ceremony, params.dept);
   const { service } = locals;
   const works = await service.getVote(pd.ceremony.year, department, pd.voter);
-  console.log('vote works', works);
-  works.sort((a, b) => (a.ranking || Infinity) - (b.ranking || Infinity));
-  const votedWorkIds = new Set(works.map((w) => w.id));
-  const allWorks = await service.getWorksInDept(pd.ceremony.year, department);
-  for (const work of allWorks) {
-    if (!votedWorkIds.has(work.id)) {
-      works.push({ ...work });
-    }
-  }
-  console.log('all works', works);
   return {
     department,
     works: works,
@@ -65,10 +55,9 @@ export const actions = {
     if ('errors' in form) {
       return fail(400, form);
     }
-
     const { year, dept } = params;
     const { service } = locals;
-    await service.setVote(cookies, year, dept, form.rankings);
+    await service.setVote(cookies, parseInt(year), dept, form.rankings);
     return;
   },
 } satisfies Actions;

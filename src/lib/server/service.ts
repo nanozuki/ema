@@ -121,15 +121,11 @@ export class Service {
   }
 
   async getVote(year: number, department: Department, voter: Voter): Promise<Work[]> {
-    const vote = await this.voteRepository.getVote(year, department, voter.id);
-    if (!vote) {
-      return [];
-    }
-    return vote.rankings;
+    return await this.voteRepository.getVote(year, department, voter.id);
   }
 
-  async setVote(cookies: Cookies, year: string, dept: string, rankingIds: Map<number, number>): Promise<void> {
-    const ceremony = await this.ceremonyRepository.getByYear(parseInt(year));
+  async setVote(cookies: Cookies, year: number, dept: string, rankingIds: Map<number, number>): Promise<void> {
+    const ceremony = await this.ceremonyRepository.getByYear(year);
     const department = parseDepartment(ceremony, dept);
     const voter = await this.getVoterToken(cookies);
     if (!voter) {

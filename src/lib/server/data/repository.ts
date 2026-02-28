@@ -1,4 +1,4 @@
-import type { Ceremony, Vote, Voter, Work } from '$lib/domain/entity';
+import type { Ceremony, Voter, Work } from '$lib/domain/entity';
 import { Err } from '$lib/domain/errors';
 import type { Department } from '$lib/domain/value';
 import type {
@@ -258,29 +258,45 @@ export class VoterRepositoryImpl implements VoterRepository {
 export class VoteRepositoryImpl implements VoteRepository {
   constructor(private db: DrizzleD1Database) {}
 
-  async getVote(year: number, department: Department, voterId: number): Promise<Vote | undefined> {
+  async getVote(year: number, department: Department, voterId: number): Promise<Work[]> {
     return await Err.catch(
       async () => {
-        const voteRows = await this.db
+        const votes = await this.db
           .select()
           .from(vote)
           .where(and(eq(vote.year, year), eq(vote.department, department), eq(vote.voterId, voterId)));
-        if (voteRows.length == 0) {
-          return undefined;
+        const voteId = votes[0]?.id;
+        let rankings: (typeof work.$inferSelect)[] = [];
+        if (!voteId) {
+          rankings = await this.db
+            .select()
+            .from(work)
+            .where(and(eq(work.year, year), eq(work.department, department)));
+        } else {
+          rankings = await this.db
+            .select({
+              id: work.id,
+              year: work.year,
+              department: work.department,
+              name: work.name,
+              originName: work.originName,
+              aliases: work.aliases,
+              bangumiId: work.bangumiId,
+              youtubeId: work.youtubeId,
+              ranking: rankingInVote.ranking,
+            })
+            .from(work)
+            .leftJoin(rankingInVote, and(eq(rankingInVote.voteId, voteId), eq(rankingInVote.workId, work.id)))
+            .where(and(eq(work.year, year), eq(work.department, department)));
         }
-        const v = voteRows[0];
-        const rankingsRows = await this.db
-          .select()
-          .from(rankingInVote)
-          .leftJoin(work, eq(rankingInVote.workId, work.id))
-          .where(eq(rankingInVote.voteId, v.id))
-          .orderBy(rankingInVote.ranking, rankingInVote.workId);
-        const rankings = rankingsRows.map((r) => {
-          const work = modelToWork(r.work!);
-          work.ranking = r.ranking_in_vote.ranking;
-          return work;
+        return rankings.map(modelToWork).sort((a, b) => {
+          const rA = a.ranking || Number.MAX_SAFE_INTEGER;
+          const rB = b.ranking || Number.MAX_SAFE_INTEGER;
+          if (rA !== rB) {
+            return rA - rB;
+          }
+          return a.id - b.id;
         });
-        return { ...v, rankings };
       },
       (err) => Err.Database(`vote.getVote(${year}, ${department}, ${voterId})`, err),
     );
