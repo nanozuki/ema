@@ -15,27 +15,27 @@
           <div>
             <p class="text-xl leading-tight font-serif font-semibold">{work.name}</p>
             <p lang="ja" class="font-serif leading-tight">{work.originName}</p>
+            {#if work.bangumiId || work.youtubeId}
+              {#if work.bangumiId}
+                <a
+                  href={`https://bangumi.tv/subject/${work.bangumiId}`}
+                  target="_blank"
+                  class="text-pine text-sm underline"
+                >
+                  Bangumi
+                </a>
+              {/if}
+              {#if work.youtubeId}
+                <a
+                  href={`https://www.youtube.com/watch?v=${work.youtubeId}`}
+                  target="_blank"
+                  class="text-pine text-sm underline"
+                >
+                  YouTube
+                </a>
+              {/if}
+            {/if}
           </div>
-          {#if work.bangumiId || work.youtubeId}
-            {#if work.bangumiId}
-              <a
-                href={`https://bangumi.tv/subject/${work.bangumiId}`}
-                target="_blank"
-                class="text-pine text-sm underline"
-              >
-                Bangumi
-              </a>
-            {/if}
-            {#if work.youtubeId}
-              <a
-                href={`https://www.youtube.com/watch?v=${work.youtubeId}`}
-                target="_blank"
-                class="text-pine text-sm underline"
-              >
-                YouTube
-              </a>
-            {/if}
-          {/if}
         {/each}
       </div>
     </div>
